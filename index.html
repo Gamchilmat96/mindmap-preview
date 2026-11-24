@@ -145,8 +145,13 @@ button.ghost { background: var(--paper); }
 #zoomLabel { min-width: 56px; }
 
 /* ── 왼쪽 글 칸: 줄 공책 ── */
-.panes { display: grid; grid-template-columns: minmax(270px, 390px) 1fr; min-height: 0; }
-.text-pane { display: flex; flex-direction: column; min-height: 0; border-right: 2px solid var(--line); background: var(--panel); }
+.panes { display: grid; grid-template-columns: var(--left-w, 390px) 10px 1fr; min-height: 0; }
+.splitter { position: relative; cursor: col-resize; background: var(--panel); border-right: 2px solid var(--line); touch-action: none; }
+.splitter::after { content: ''; position: absolute; left: 2px; top: 50%; width: 4px; height: 44px; margin-top: -22px; border-radius: 3px;
+  background: repeating-linear-gradient(to bottom, var(--edge) 0 4px, transparent 4px 8px); }
+.splitter:hover, .splitter.dragging, .splitter:focus-visible { background: var(--pink); outline: none; }
+body.resizing { cursor: col-resize; user-select: none; }
+.text-pane { display: flex; flex-direction: column; min-height: 0; background: var(--panel); }
 .pane-title {
   font-size: 13px; line-height: 1.75; color: var(--ink); padding: 10px 14px; margin: 12px 14px 4px;
   background: var(--butter); border: 2px solid var(--line); border-radius: 12px; box-shadow: 3px 3px 0 var(--shade);
@@ -370,7 +375,8 @@ kbd { border-bottom-width: 3px; }
   .wd { display: none; }
   .menu-list { position: fixed; left: 12px; right: 12px; top: auto; width: auto; }
   .panes { grid-template-columns: 1fr; grid-template-rows: minmax(150px, 36%) 1fr; }
-  .text-pane { border-right: 0; border-bottom: 2px solid var(--line); }
+  .text-pane { border-bottom: 2px solid var(--line); }
+  .splitter { display: none; }
   .pane-title { margin: 8px 10px 2px; padding: 8px 10px; }
   #outline, #castText { padding: 8px 12px 12px 28px; }
   #ledgerPane { padding: 16px 12px; }
@@ -424,6 +430,7 @@ kbd { border-bottom-width: 3px; }
     <textarea id="outline" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="플롯 글"></textarea>
     <textarea id="castText" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="인물 글" hidden></textarea>
   </section>
+  <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" aria-label="글 칸 폭 (끌거나 ← → 키, 두 번 누르면 처음 폭)" tabindex="0" title="끌어서 글 칸 폭 바꾸기 · 두 번 누르면 처음 폭"></div>
   <section class="view">
     <div class="view-bar">
       <span id="plotBar" class="group" style="gap:12px">
@@ -434,6 +441,7 @@ kbd { border-bottom-width: 3px; }
       <span id="castBar" class="group" hidden>
         <label>회차 시점 <input id="at" type="number" min="1" step="1" inputmode="numeric" placeholder="전체"> 화</label>
         <button id="atAll" title="모든 관계 보기">전체</button>
+        <button id="offBtn" class="mini" aria-pressed="true" title="회차 시점에 없는 관계를 숨길지 흐리게 둘지" disabled>지난 관계: 숨김</button>
       </span>
       <span class="spacer"></span>
       <span id="zoomGroup" class="group">
@@ -777,6 +785,12 @@ const MM = (() => {
     return { chars, rels };
   }
   const activeAt = (r, at) => at == null || ((r.start == null || r.start <= at) && (r.end == null || at <= r.end));
+  // 회차 시점에 살아 있는 관계만 남긴 인물 목록(지도 배치용). keep[k] = 원래 관계 번호. at이 없으면 전부
+  function castAt(cast, at) {
+    const keep = [];
+    cast.rels.forEach((r, i) => { if (activeAt(r, at)) keep.push(i); });
+    return { chars: cast.chars, rels: keep.map(i => cast.rels[i]), keep };
+  }
   function rangeText(r) {
     return r.start != null && r.end != null ? `${r.start}~${r.end}화` : r.start != null ? `${r.start}화~` : r.end != null ? `~${r.end}화` : '';
   }
@@ -1017,7 +1031,7 @@ const MM = (() => {
   return {
     parse, serialize, valid, subtreeEnd, prevSibling, nextSibling, parentOf, addChild, addSibling, remove, rename, moveUp, moveDown, indent, outdent, moveTo,
     buildTree, layout, stats,
-    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline,
+    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline,
   };
 })();
 </script>
@@ -1087,7 +1101,7 @@ const MM = (() => {
   const state = {
     site: '', flat: [], lineToIndex: [], deco: [], cast: { chars: [], rels: [] },
     structure: MM.DEFAULT_STRUCTURE, target: 5000, at: null, mode: 'plot', castHi: null,
-    folded: new Set(), keys: [], visible: new Set(), showClosed: null, wrap: true,
+    folded: new Set(), keys: [], visible: new Set(), showClosed: null, wrap: true, hideOff: true,
   };
   let selected = -2;          // -2 없음, -1 작품 제목(뿌리), 0 이상 = 플롯 목록 위치
   let zoom = 1;
@@ -1126,7 +1140,7 @@ const MM = (() => {
   function save() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
-      try { localStorage.setItem(STORE, JSON.stringify({ ...current(), mode: state.mode, folds: [...state.folded], wrap: state.wrap })); } catch (e) { /* 저장 못 해도 편집은 된다 */ }
+      try { localStorage.setItem(STORE, JSON.stringify({ ...current(), mode: state.mode, folds: [...state.folded], wrap: state.wrap, leftW: state.leftW || null })); } catch (e) { /* 저장 못 해도 편집은 된다 */ }
       if (bk) checkDirty();
     }, 300);
   }
@@ -1279,7 +1293,10 @@ const MM = (() => {
   const CAST_COLORS = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7'];
   const castColor = k => k === 0 ? 'c0' : CAST_COLORS[1 + (k - 1) % 7];
   function renderCast() {
-    CL = MM.castLayout(state.cast, (t, kind) => kind === 'name' ? mName15(t) : kind === 'desc' ? mDesc(t) : mSmall(t) + 2);
+    // 시점 밖 관계 숨기기(기본): 그 회차에 살아 있는 관계만으로 선을 배치한다. 흐리게 보기면 전부 배치
+    const view = MM.castAt(state.cast, state.hideOff ? state.at : null);
+    CL = MM.castLayout(view, (t, kind) => kind === 'name' ? mName15(t) : kind === 'desc' ? mDesc(t) : mSmall(t) + 2);
+    CL.edges.forEach(e => { e.ri = view.keep[e.ri]; });          // 원래 관계 번호로(선택 · 강조가 이 번호를 쓴다)
     if (!state.cast.chars.length) {
       sizeSvg(castSvg, 520, 80);
       castSvg.innerHTML = `<text class="empty-msg" x="${PAD}" y="${PAD + 16}">인물이 없습니다 — 왼쪽에 "이름 : 설명"을 한 줄씩 적어 보세요</text>`;
@@ -1373,8 +1390,9 @@ const MM = (() => {
       const span = r.from != null && r.to != null ? Math.abs(r.to - r.from) : null;   // 두 그림 사이 거리(화) — 좁으면 작은 점으로
       return `<div class="tl-row"${span != null && r.status !== 'open' ? ` data-span="${span}"` : ''}><span class="tl-name" title="${esc(r.name)}">${esc(r.name)}</span><div class="tl-track">${body}</div></div>`;
     };
-    // 긴 작품: 거둔 떡밥이 많으면 처음엔 접어 둔다(아직 안 거둔 것 · 확인할 것이 먼저)
-    const showClosed = state.showClosed ?? closed <= 6;
+    // 떡밥이 20개를 넘는 긴 작품에서만 거둔 것을 처음에 접어 둔다(아직 안 거둔 것 · 확인할 것이 먼저).
+    // 전에는 '거둔 것 7개 이상'이 기준이라 24화짜리 작품에서도 흐름이 거의 비어 보였다(HANDOFF §3 A″ 2)
+    const showClosed = state.showClosed ?? tl.rows.length <= 20;
     const rowsShown = tl.rows.filter(r => showClosed || r.status !== 'closed');
     const toggle = closed ? `<button class="tl-toggle" data-act="closed">${showClosed ? `거둔 떡밥 ${closed}개 숨기기` : `거둔 떡밥 ${closed}개도 보기`}</button>` : '';
     const timeline = tl.last ? `<section class="box"><h2>떡밥 흐름 <span class="h2-right"><span>1화 ~ ${tl.last}화 · 그림을 누르면 플롯의 그 줄로</span>${toggle}</span></h2><div class="tl" data-last="${tl.last}">` +
@@ -1691,6 +1709,31 @@ const MM = (() => {
     const b = $('#wrapBtn'); b.setAttribute('aria-pressed', String(on)); b.textContent = '긴 줄 줄바꿈: ' + (on ? '켬' : '끔');
   }
   $('#wrapBtn').onclick = () => { setWrap(!state.wrap); save(); };
+  // 글 칸 폭: 가운데 막대를 끌거나 ← → 키(20px씩). 두 번 누르면 처음(390px). 폭은 이 브라우저에 기억
+  const panesEl = $('.panes'), splitter = $('#splitter'), LEFT_DEFAULT = 390;
+  function setLeftW(w, persist = true) {
+    const max = Math.max(280, panesEl.clientWidth * 0.7);
+    state.leftW = Math.round(Math.min(max, Math.max(240, w)));
+    panesEl.style.setProperty('--left-w', state.leftW + 'px');
+    if (persist) save();
+  }
+  splitter.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault(); splitter.setPointerCapture(e.pointerId);
+    splitter.classList.add('dragging'); document.body.classList.add('resizing');
+    const left = panesEl.getBoundingClientRect().left;
+    const move = ev => setLeftW(ev.clientX - left - 5, false);
+    const up = () => {
+      splitter.removeEventListener('pointermove', move); splitter.removeEventListener('pointerup', up); splitter.removeEventListener('pointercancel', up);
+      splitter.classList.remove('dragging'); document.body.classList.remove('resizing'); save();
+      if (!ledgerPane.hidden) tightenTimeline();
+    };
+    splitter.addEventListener('pointermove', move); splitter.addEventListener('pointerup', up); splitter.addEventListener('pointercancel', up);
+  });
+  splitter.addEventListener('dblclick', () => setLeftW(LEFT_DEFAULT));
+  splitter.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setLeftW((state.leftW || LEFT_DEFAULT) + (e.key === 'ArrowLeft' ? -20 : 20)); }
+  });
   function buildFoldBar() {
     const lv = MM.STRUCTURES[state.structure].levels;
     $('#foldBar').innerHTML = '<span class="lbl-sm">펼치기</span>' + lv.slice(0, -1).map((name, d) => `<button data-lv="${d}" title="${name}까지만 보고 그 아래는 접기">${name}까지</button>`).join('') +
@@ -1698,8 +1741,15 @@ const MM = (() => {
   }
   $('#foldBar').addEventListener('click', e => { const b = e.target.closest('button'); if (b) foldLevel(b.dataset.lv === 'all' ? null : +b.dataset.lv); });
   targetInput.addEventListener('input', () => { const v = parseInt(targetInput.value, 10); state.target = v > 0 ? v : null; noteTyping(); updateStats(); save(); });
-  atInput.addEventListener('input', () => { const v = parseInt(atInput.value, 10); state.at = v > 0 ? v : null; renderCast(); updateStats(); });
-  $('#atAll').onclick = () => { atInput.value = ''; state.at = null; renderCast(); updateStats(); };
+  const offBtn = $('#offBtn');
+  function syncOffBtn() {
+    offBtn.disabled = state.at == null;
+    offBtn.setAttribute('aria-pressed', String(state.hideOff));
+    offBtn.textContent = '지난 관계: ' + (state.hideOff ? '숨김' : '흐리게');
+  }
+  atInput.addEventListener('input', () => { const v = parseInt(atInput.value, 10); state.at = v > 0 ? v : null; syncOffBtn(); renderCast(); updateStats(); });
+  $('#atAll').onclick = () => { atInput.value = ''; state.at = null; syncOffBtn(); renderCast(); updateStats(); };
+  offBtn.onclick = () => { state.hideOff = !state.hideOff; syncOffBtn(); renderCast(); };
 
   // ── 보기 바꾸기: 플롯 지도 · 인물 지도 · 떡밥 장부 ──
   const tabs = [...document.querySelectorAll('.tabs [data-mode]')];
@@ -1843,6 +1893,8 @@ const MM = (() => {
   setMode(saved && ['plot', 'cast', 'ledger'].includes(saved.mode) ? saved.mode : 'plot');
   buildFoldBar();
   setWrap(!(saved && saved.wrap === false));
+  if (saved && saved.leftW > 0) setLeftW(saved.leftW, false);
+  syncOffBtn();
   bk = loadBackup();
   if (!bk) { bk = { at: null, sig: docSig(), dirtySince: null, snooze: '' }; saveBackup(); }   // 처음 연 글(예시 등)은 '바뀐 것 없음'에서 시작
   checkDirty();
