@@ -84,7 +84,7 @@ body {
 
 /* ── 위쪽 막대 ── */
 header {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 10px;
   padding: 10px 16px; background: var(--panel); border-bottom: 2px solid var(--line); position: relative; z-index: 5;
 }
 .brand { display: flex; align-items: center; gap: 8px; margin-right: 2px; }
@@ -92,7 +92,7 @@ header {
 header h1 { font: 19px var(--font-cute); margin: 0; white-space: nowrap; letter-spacing: -.01em; }
 .tag { font: 11px/18px var(--font-cute); color: var(--ink); background: var(--pink); border: 1.5px solid var(--line); border-radius: 999px; padding: 0 8px; white-space: nowrap; transform: rotate(4deg); }
 .title-field { gap: 8px; white-space: nowrap; font-family: var(--font-cute); color: var(--muted); }
-#site { width: 210px; max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
+#site { width: 170px; max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
 #site:hover { border-color: var(--edge); }
 #site:focus { border: 2px solid var(--line); background: var(--panel); outline: none; }
 #site::placeholder { color: var(--muted); }
@@ -346,6 +346,32 @@ table.ledger { border-collapse: collapse; width: 100%; font-size: 13.5px; }
   box-shadow: 4px 4px 0 var(--shade); font: 14px var(--font-cute); color: var(--ink);
 }
 .toast > svg { width: 32px; height: 29px; flex: none; }
+/* 따라 하기 */
+.tut {
+  position: fixed; right: 18px; bottom: 60px; z-index: 35; width: min(380px, calc(100vw - 24px));
+  background: var(--panel); border: 2px solid var(--line); border-radius: 18px; box-shadow: 5px 5px 0 var(--shade); padding: 14px 16px 12px;
+}
+.tut-head { display: flex; align-items: center; gap: 10px; }
+.tut-head > svg { width: 46px; height: 42px; flex: none; transform: rotate(-6deg); }
+.tut-head b { display: block; font: 17px var(--font-cute); font-weight: 400; }
+.tut-step { display: inline-block; font: 12px var(--font-cute); color: var(--ink); background: var(--butter); border: 1.5px solid var(--line); border-radius: 999px; padding: 0 8px; margin-bottom: 2px; }
+.tut p { margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; }
+.tut p.tut-sub { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+.tut code, .tut kbd { font: 12.5px var(--font-text); background: var(--paper); border: 1.5px solid var(--line); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
+.tut kbd { border-bottom-width: 3px; }
+.tut-dots { display: flex; gap: 6px; margin: 12px 0 2px; }
+.tut-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--paper); }
+.tut-dots i.on { background: var(--mint-d); } .tut-dots i.cur { background: var(--pink-d); }
+.tut-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tut-btns button { font-size: 13.5px; padding: 3px 11px; }
+.tut-btns button:first-child { background: var(--pink); }
+.tut-sum { margin: 10px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.8; }
+.tut-btn { color: var(--ink); background: var(--butter); }
+.tut-ico { display: none; }
+.tut-focus { outline: 3px solid var(--sel) !important; outline-offset: 2px; animation: tutPulse 1.2s ease-in-out infinite; position: relative; z-index: 1; }
+@keyframes tutPulse { 50% { outline-color: transparent; } }
+@media (prefers-reduced-motion: reduce) { .tut-focus { animation: none; } }
+
 /* 확인 창 */
 .ask { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(59, 47, 47, .35); }
 .ask-card { width: min(440px, 100%); background: var(--panel); border: 2px solid var(--line); border-radius: 20px; box-shadow: 6px 6px 0 var(--shade); padding: 20px 22px 18px; text-align: center; }
@@ -373,6 +399,7 @@ kbd { border-bottom-width: 3px; }
   .tabs { flex: 1 1 100%; } .tabs button { flex: 1; padding: 5px 6px; }
   header .group button, .menu > summary { padding: 3px 9px; font-size: 13.5px; }
   .wd { display: none; }
+  .tut-ico { display: inline; font-size: 15px; padding: 0 2px; }
   .menu-list { position: fixed; left: 12px; right: 12px; top: auto; width: auto; }
   .panes { grid-template-columns: 1fr; grid-template-rows: minmax(150px, 36%) 1fr; }
   .text-pane { border-bottom: 2px solid var(--line); }
@@ -385,6 +412,7 @@ kbd { border-bottom-width: 3px; }
   footer { padding: 6px 12px; }
   #help { display: none; }
   .nag { bottom: 44px; flex-wrap: wrap; }
+  .tut { right: 12px; left: 12px; width: auto; bottom: 48px; max-height: 46vh; overflow: auto; }
   .nag-btns { flex-direction: row; width: 100%; justify-content: flex-end; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -408,6 +436,7 @@ kbd { border-bottom-width: 3px; }
     <button id="redoBtn" class="ghost" title="다시 하기 (⇧⌘Z)">↷<span class="wd"> 다시</span></button>
   </div>
   <div class="group">
+    <button id="tutBtn" class="ghost tut-btn" title="떡밥이와 3분 따라 하기(연습 작품으로, 쓰던 작품은 따로 둠)" aria-label="따라 하기"><span class="tut-ico">?</span><span class="wd">따라 하기</span></button>
     <button id="exampleBtn" class="ghost" title="예시 작품 「검을 버린 막내」를 불러오기">예시</button>
     <button id="clearBtn" class="ghost" title="모두 지우고 새로 시작(되돌리기로 돌아옴)">비우기</button>
   </div>
@@ -468,6 +497,7 @@ kbd { border-bottom-width: 3px; }
 </footer>
 <div id="nag" class="nag" role="status" hidden></div>
 <div id="toast" class="toast" role="status" hidden></div>
+<div id="tut" class="tut" role="dialog" aria-live="polite" aria-label="따라 하기" hidden></div>
 <div id="ask" class="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle" hidden></div>
 
 <script id="core">
@@ -1019,6 +1049,22 @@ const MM = (() => {
     return { flat, header: false, hasPart: false, rows: rows.length };
   }
 
+  // ── 따라 하기(튜토리얼): 단계마다 됐는지 확인 ──
+  // ctx: { flat, structure, cast, mode, backedUp }. 연습 작품은 '부 › 화 › 장면' 구조로 시작한다
+  function tutorialChecks({ flat, structure, cast, mode, backedUp }) {
+    const ep = epDepth(structure), lg = ledger(flat, structure);
+    return {
+      plot: flat.some(n => n.depth === 0),
+      ep: flat.some(n => n.depth === ep),
+      scene: flat.some(n => n.depth === ep + 1),
+      plant: lg.items.some(x => x.plants.length > 0),
+      ledgerTab: mode === 'ledger',
+      payoff: lg.items.some(x => x.status === 'closed'),
+      cast: cast.chars.length >= 2 && cast.rels.length >= 1,
+      backup: !!backedUp,
+    };
+  }
+
   // ── 단축키 이름: Mac은 기호(⌘ ⌥ ⇧), 그 밖(Windows · Linux · ChromeOS · Android)은 Ctrl · Alt ──
   // platform: navigator.userAgentData.platform('macOS', 'Windows') 또는 navigator.platform('MacIntel', 'Win32')
   function keyNames(platform) {
@@ -1031,7 +1077,7 @@ const MM = (() => {
   return {
     parse, serialize, valid, subtreeEnd, prevSibling, nextSibling, parentOf, addChild, addSibling, remove, rename, moveUp, moveDown, indent, outdent, moveTo,
     buildTree, layout, stats,
-    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline,
+    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline, tutorialChecks,
   };
 })();
 </script>
@@ -1880,6 +1926,118 @@ const MM = (() => {
     markBackedUp();
   });
 
+  // ── 따라 하기(튜토리얼) ──
+  // 연습 작품에서 8단계를 해 본다. 쓰던 작품은 TKEY에 따로 두고, 끝나면 되돌릴 수 있다(새로고침해도 남음).
+  const TKEY = 'mindmap-novel-before-tutorial', SEEN = 'mindmap-novel-tutorial-seen';
+  const lastLines = () => ta.value.replace(/\s+$/, '');
+  function tutWrite(text) { pushHistory(); ta.value = text; commit(); syncFromText(false); }
+  function tutCast(text) { pushHistory(); castTa.value = text; commit(); syncCast(); }
+  const TUT = [
+    { id: 'plot', mode: 'plot', target: () => ta, title: '플롯 첫 줄 적기',
+      body: '왼쪽 글 칸을 눌러 큰 덩어리(부)를 한 줄 적어 보세요.<br>예: <code>1부 시작</code>',
+      demo: () => tutWrite('1부 시작') },
+    { id: 'ep', mode: 'plot', target: () => ta, title: '한 단계 아래로 — 화',
+      body: '<kbd>Enter</kbd>로 줄을 바꾸고 <kbd>Tab</kbd>을 누른 뒤 화 제목을 적어요.<br>예: <code>첫 만남</code> — 그림에 <b>1화</b>가 붙어요.',
+      mobile: '휴대폰은 줄 앞에 띄어쓰기 두 칸이 Tab이에요.',
+      demo: () => tutWrite(lastLines() + '\n  첫 만남') },
+    { id: 'scene', mode: 'plot', target: () => ta, title: '장면 하나 더',
+      body: '한 번 더 <kbd>Enter</kbd> → <kbd>Tab</kbd>, 이번엔 장면을 적어요.<br>예: <code>비 오는 골목에서 마주치다</code>',
+      demo: () => tutWrite(lastLines() + '\n    비 오는 골목에서 마주치다') },
+    { id: 'plant', mode: 'plot', target: () => ta, title: '떡밥 심기',
+      body: '장면 줄 끝에 <code>[떡밥 반지]</code>를 붙여 보세요.<br>그림에 주황 표가 생겨요. 대괄호 안 첫 말이 <b>떡밥</b>이면 심은 곳이에요.',
+      demo: () => {
+        const lines = ta.value.split('\n'); let k = lines.length - 1;
+        while (k >= 0 && !/^ {4}\S/.test(lines[k])) k--;
+        if (k < 0) tutWrite(lastLines() + '\n    비 오는 골목에서 마주치다 [떡밥 반지]');
+        else { lines[k] = lines[k].replace(/\s+$/, '') + ' [떡밥 반지]'; tutWrite(lines.join('\n')); }
+      } },
+    { id: 'ledgerTab', mode: null, target: () => $('.tabs [data-mode="ledger"]'), title: '떡밥 장부 열어 보기',
+      body: '위쪽 <b>떡밥 장부</b> 탭을 눌러 보세요.<br>아직 안 거둔 떡밥이 떡으로 보이고, 탭에 숫자가 떠요.',
+      demo: () => setMode('ledger') },
+    { id: 'payoff', mode: 'plot', target: () => state.mode === 'plot' ? ta : $('.tabs [data-mode="plot"]'), title: '떡밥 거두기',
+      body: '<b>플롯 지도</b>로 돌아가 두 번째 화를 만들고, 장면 줄 끝에 <code>[회수 반지]</code>를 붙여요.<br>이름이 같아야 짝이 맞아요. 장부에 물고기가 생기면 성공!',
+      demo: () => { setMode('plot'); tutWrite(lastLines() + '\n\n  두 번째 만남\n    반지가 빛나다 [회수 반지]'); } },
+    { id: 'cast', mode: 'cast', target: () => state.mode === 'cast' ? castTa : $('.tabs [data-mode="cast"]'), title: '인물과 관계',
+      body: '<b>인물 지도</b> 탭에서 한 줄에 한 명씩, 그리고 관계를 적어요.<br><code>민준 : 주인공</code><br><code>서아 : 조력자</code><br><code>민준 -> 서아 : 신뢰 (2화~)</code>',
+      demo: () => { setMode('cast'); tutCast('민준 : 주인공\n서아 : 조력자\n\n민준 -> 서아 : 신뢰 (2화~)'); } },
+    { id: 'backup', mode: null, target: () => $('#backupInfo'), title: '백업하기',
+      body: '작품은 이 브라우저 안에만 있어요. 오른쪽 아래 <b>백업</b> 표시를 눌러 파일로 저장해 보세요.<br>백업할 때가 되면 떡밥이가 알려 줘요.',
+      demo: () => saveFile() },
+  ];
+  let tut = null;                     // { i, done:Set, timer }
+  const tutEl = $('#tut');
+  function tutFocus(el) {
+    document.querySelectorAll('.tut-focus').forEach(x => x.classList.remove('tut-focus'));
+    if (el) el.classList.add('tut-focus');
+  }
+  function tutChecks() {
+    return MM.tutorialChecks({ flat: state.flat, structure: state.structure, cast: state.cast, mode: state.mode, backedUp: !!(bk && bk.at && tut && bk.at >= tut.startedAt) });
+  }
+  function renderTut(cheer = false) {
+    if (!tut) return;
+    if (tut.i >= TUT.length) { renderTutEnd(); return; }
+    const st = TUT[tut.i], touch = matchMedia('(pointer: coarse)').matches;
+    tutEl.innerHTML = `<div class="tut-head">${ICON.mochi}<div><span class="tut-step">따라 하기 ${tut.i + 1} / ${TUT.length}</span><b>${cheer ? '잘했어요! ' : ''}${st.title}</b></div></div>` +
+      `<p>${st.body}</p>${st.mobile && touch ? `<p class="tut-sub">${st.mobile}</p>` : ''}` +
+      `<div class="tut-dots">${TUT.map((x, k) => `<i class="${k < tut.i ? 'on' : k === tut.i ? 'cur' : ''}"></i>`).join('')}</div>` +
+      '<div class="tut-btns"><button data-t="demo">대신 해 주기</button><button data-t="skip" class="ghost">건너뛰기</button><button data-t="stop" class="ghost">그만하기</button></div>';
+    tutEl.hidden = false;
+    tutFocus(st.target());
+  }
+  function renderTutEnd(stopped = false) {
+    clearInterval(tut && tut.timer);
+    tutFocus(null);
+    tutEl.innerHTML = `<div class="tut-head">${ICON.mochi}<div><span class="tut-step">따라 하기 ${stopped ? '그만' : '끝'}</span><b>${stopped ? '여기까지 해 봤어요' : '다 했어요! 이제 직접 써 볼까요?'}</b></div></div>` +
+      '<ul class="tut-sum"><li>한 줄 = 한 칸, <kbd>Tab</kbd> = 한 단계 아래 (부 › 화 › 장면)</li><li><code>[떡밥 이름]</code> 심기 · <code>[회수 이름]</code> 거두기</li>' +
+      '<li>인물 <code>이름 : 설명</code> · 관계 <code>가 -> 나 : 관계 (12화~)</code>, 서로는 <code>&lt;-&gt;</code></li><li>엑셀 표는 글 칸에 그대로 붙여 넣어도 돼요</li><li>긴 작품은 그림 위 <b>펼치기 → 부까지</b></li></ul>' +
+      '<div class="tut-btns"><button data-t="restore">연습 지우고 원래 작품으로</button><button data-t="keep" class="ghost">연습한 그대로 두기</button><button data-t="example" class="ghost">예시 작품 구경하기</button></div>';
+    tutEl.hidden = false;
+  }
+  function tutTick() {
+    if (!tut || tut.i >= TUT.length) return;
+    const st = TUT[tut.i];
+    if (tutChecks()[st.id]) { tut.i++; renderTut(true); }
+    else { const t = st.target(); if (t && !t.classList.contains('tut-focus')) tutFocus(t); }
+  }
+  function startTutorial() {
+    const snap = { ...current(), folds: [...state.folded] };
+    try { localStorage.setItem(TKEY, JSON.stringify(snap)); localStorage.setItem(SEEN, '1'); } catch (e) { /* 이 창 안에서는 그대로 동작 */ }
+    tut = { i: 0, snap, startedAt: Date.now(), timer: 0 };
+    setDoc({ site: '연습 작품', text: '', cast: '', structure: '부화장면', target: 5000 });
+    state.folded = new Set(); render(); setMode('plot');
+    renderTut();
+    tut.timer = setInterval(tutTick, 400);
+    ta.focus();
+  }
+  function endTutorial(choice) {
+    const snap = tut ? tut.snap : (() => { try { return JSON.parse(localStorage.getItem(TKEY)); } catch (e) { return null; } })();
+    clearInterval(tut && tut.timer); tut = null; tutFocus(null); tutEl.hidden = true;
+    try { localStorage.removeItem(TKEY); } catch (e) { /* 무시 */ }
+    if (choice === 'restore' && snap && typeof snap.text === 'string') {
+      setDoc({ site: snap.site || '', text: snap.text, cast: snap.cast || '', structure: snap.structure, target: snap.target });
+      state.folded = new Set(Array.isArray(snap.folds) ? snap.folds : []); render(); save();
+      toast('원래 작품으로 돌아왔어요');
+    } else if (choice === 'example') { setDoc(EXAMPLE); toast('예시 작품 「검을 버린 막내」예요. 세 탭을 둘러보세요'); }
+    setMode('plot');
+  }
+  tutEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-t]'); if (!b) return;
+    const a = b.dataset.t;
+    if (a === 'demo') { TUT[tut.i].demo(); setTimeout(tutTick, 50); }
+    else if (a === 'skip') { tut.i++; renderTut(); }
+    else if (a === 'stop') { tut.i = TUT.length; renderTutEnd(true); }
+    else if (a === 'start') { tutEl.hidden = true; startTutorial(); }
+    else if (a === 'later') { tutEl.hidden = true; try { localStorage.setItem(SEEN, '1'); } catch (e2) { /* 무시 */ } }
+    else endTutorial(a);
+  });
+  $('#tutBtn').onclick = () => { if (tut) return; startTutorial(); };
+  function tutorialIntro() {
+    tutEl.innerHTML = `<div class="tut-head">${ICON.mochi}<div><span class="tut-step">처음 오셨나요?</span><b>떡밥이가 3분 동안 안내해 드릴게요</b></div></div>` +
+      '<p>연습 작품으로 플롯 · 떡밥 · 인물 · 백업을 한 번씩 해 봐요. 지금 화면의 예시는 끝나고 다시 볼 수 있어요.</p>' +
+      '<div class="tut-btns"><button data-t="start">따라 하기 시작</button><button data-t="later" class="ghost">괜찮아요, 바로 쓸게요</button></div>';
+    tutEl.hidden = false;
+  }
+
   // ── 시작 ──
   if (document.fonts) {
     let fontTimer = 0;
@@ -1899,6 +2057,17 @@ const MM = (() => {
   if (!bk) { bk = { at: null, sig: docSig(), dirtySince: null, snooze: '' }; saveBackup(); }   // 처음 연 글(예시 등)은 '바뀐 것 없음'에서 시작
   checkDirty();
   setInterval(updateBackupUI, 5 * 60e3);
+  (() => {
+    let pending = null, seen = false;
+    try { pending = JSON.parse(localStorage.getItem(TKEY)); seen = !!localStorage.getItem(SEEN); } catch (e) { /* 무시 */ }
+    if (pending && typeof pending.text === 'string') {        // 따라 하기 도중에 창을 닫았다
+      tut = null;
+      tutEl.innerHTML = `<div class="tut-head">${ICON.mochi}<div><span class="tut-step">따라 하기를 하다 멈췄어요</span><b>쓰던 작품으로 돌아갈까요?</b></div></div>` +
+        '<p>지금 화면은 연습 작품이에요. 따라 하기 전에 쓰던 작품은 따로 보관해 두었어요.</p>' +
+        '<div class="tut-btns"><button data-t="restore">원래 작품으로</button><button data-t="keep" class="ghost">지금 그대로 두기</button></div>';
+      tutEl.hidden = false;
+    } else if (!saved && !seen) tutorialIntro();               // 처음 온 사람
+  })();
   updateUndoButtons();
 
   // 검사용 (qa에서 읽는다)
