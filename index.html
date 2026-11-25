@@ -84,7 +84,7 @@ body {
 
 /* ── 위쪽 막대 ── */
 header {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 10px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px;
   padding: 10px 16px; background: var(--panel); border-bottom: 2px solid var(--line); position: relative; z-index: 5;
 }
 .brand { display: flex; align-items: center; gap: 8px; margin-right: 2px; }
@@ -92,7 +92,7 @@ header {
 header h1 { font: 19px var(--font-cute); margin: 0; white-space: nowrap; letter-spacing: -.01em; }
 .tag { font: 11px/18px var(--font-cute); color: var(--ink); background: var(--pink); border: 1.5px solid var(--line); border-radius: 999px; padding: 0 8px; white-space: nowrap; transform: rotate(4deg); }
 .title-field { gap: 8px; white-space: nowrap; font-family: var(--font-cute); color: var(--muted); }
-#site { width: 170px; max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
+#site { width: 150px; max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
 #site:hover { border-color: var(--edge); }
 #site:focus { border: 2px solid var(--line); background: var(--panel); outline: none; }
 #site::placeholder { color: var(--muted); }
@@ -116,7 +116,7 @@ button:disabled { opacity: .38; cursor: default; transform: none; box-shadow: 0 
 button.ghost { background: var(--paper); }
 
 .tabs { display: flex; gap: 6px; padding: 0; }
-.tabs button { font-size: 15px; padding: 5px 14px; background: var(--paper); color: var(--muted); box-shadow: none; border-color: var(--soft-line); }
+.tabs button { font-size: 15px; padding: 5px 11px; background: var(--paper); color: var(--muted); box-shadow: none; border-color: var(--soft-line); }
 .tabs button:hover { color: var(--ink); border-color: var(--line); box-shadow: 0 3px 0 var(--shade); }
 .tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--line); box-shadow: 0 3px 0 var(--shade); transform: translateY(-1px); }
 .tabs button[data-mode="plot"][aria-selected="true"] { background: var(--butter); }
@@ -258,6 +258,23 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
   color: var(--ink); background: var(--panel); border: 2px solid var(--sel); border-radius: 10px;
   padding: 0 10px; outline: none; box-shadow: 3px 3px 0 var(--shade);
 }
+
+/* ── 작품 메모: 줄 공책 한 장 ── */
+.memo-pane { flex: 1; min-height: 0; overflow: auto; padding: 20px 22px; background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--grid) 1.5px, transparent 1.5px); background-size: 26px 26px; }
+.memo-page { max-width: 820px; height: 100%; min-height: 360px; display: flex; flex-direction: column; background: var(--panel); border: 2px solid var(--line); border-radius: 18px; box-shadow: 5px 5px 0 var(--shade); overflow: hidden; }
+.memo-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 11px 18px; background: var(--lav); border-bottom: 2px solid var(--line); }
+.memo-head b { font: 17px var(--font-cute); font-weight: 400; }
+.memo-head span { font-size: 12.5px; color: var(--ink); opacity: .75; }
+#memoText {
+  flex: 1; width: 100%; min-height: 0; resize: none; border: 0; outline: none; padding: 10px 20px 20px 34px; color: var(--ink);
+  font: 15.5px/30px var(--font-text); white-space: pre-wrap; overflow-wrap: anywhere; background-color: var(--panel);
+  background-image: linear-gradient(90deg, transparent 21px, var(--margin) 21px, var(--margin) 24px, transparent 24px),
+    repeating-linear-gradient(to bottom, transparent 0 29px, var(--rule) 29px 30px);
+  background-position: 0 0, 0 10px; background-attachment: local;
+}
+#memoText::placeholder { color: var(--muted); opacity: .55; }
+.tabs button[data-mode="memo"][aria-selected="true"] { background: var(--lav); }
 
 /* ── 떡밥 장부 ── */
 #ledgerPane { flex: 1; overflow: auto; min-height: 0; padding: 24px 22px; background-color: var(--paper);
@@ -424,7 +441,7 @@ kbd { border-bottom-width: 3px; }
   .splitter { display: none; }
   .pane-title { margin: 8px 10px 2px; padding: 8px 10px; }
   #outline, #castText { padding: 8px 12px 12px 28px; }
-  #ledgerPane { padding: 16px 12px; }
+  #ledgerPane, .memo-pane { padding: 12px; }
   .tl-row { grid-template-columns: 86px 1fr; gap: 8px; }
   .fold-bar { border-left: 0; padding-left: 0; }
   footer { padding: 6px 12px; }
@@ -454,6 +471,7 @@ kbd { border-bottom-width: 3px; }
     <button role="tab" data-mode="plot" aria-selected="true">플롯 지도</button>
     <button role="tab" data-mode="cast" aria-selected="false">인물 지도</button>
     <button role="tab" data-mode="ledger" aria-selected="false">떡밥 장부<span id="openCount" class="badge" hidden></span></button>
+    <button role="tab" data-mode="memo" aria-selected="false" title="그림으로 바뀌지 않는 자유 메모(로그라인 · 세계관 · 톤 · 자료)">메모</button>
   </nav>
   <span class="spacer header-spacer"></span>
   <div class="group">
@@ -472,7 +490,7 @@ kbd { border-bottom-width: 3px; }
       <button id="openFileBtn"><span class="lbl">불러오기</span><small>저장한 파일이나 들여쓰기 글 파일 열기</small></button>
       <hr>
       <button id="copyTableBtn"><span class="lbl">시놉시스 표 복사</span><small>화마다 한 줄(제목 · 장면 · 떡밥) — 엑셀 · 구글 시트에 붙여넣기</small></button>
-      <button id="copyTextBtn"><span class="lbl">글 복사</span><small>지금 보는 글(플롯 또는 인물)</small></button>
+      <button id="copyTextBtn"><span class="lbl">글 복사</span><small>지금 보는 글(플롯 · 인물 · 메모)</small></button>
     </div>
   </details>
   <input id="fileInput" type="file" accept=".txt,.tsv,text/plain,text/tab-separated-values" hidden>
@@ -513,6 +531,12 @@ kbd { border-bottom-width: 3px; }
       </div>
     </div>
     <div id="ledgerPane" hidden></div>
+    <div id="memoPane" class="memo-pane" hidden>
+      <div class="memo-page">
+        <div class="memo-head"><b>작품 메모</b><span>그림으로 바뀌지 않는 자유 메모예요 · 자동 저장 · 파일로 저장할 때 함께 들어가요</span></div>
+        <textarea id="memoText" spellcheck="false" autocomplete="off" aria-label="작품 메모" placeholder="로그라인 — 누가, 무엇을 위해, 무엇과 싸우나 (한 줄)&#10;&#10;세계관 · 규칙&#10;- &#10;&#10;톤 · 분위기&#10;- &#10;&#10;자료 · 링크&#10;- "></textarea>
+      </div>
+    </div>
     <div id="welcome" class="welcome" hidden></div>
   </section>
 </main>
@@ -950,6 +974,8 @@ const MM = (() => {
       `구조: ${structureOf(doc.structure).label}`,
       `회당 목표 글자 수: ${doc.target || ''}`,
       '', '== 플롯 ==', doc.text || '', '', '== 인물 ==', doc.cast || '', '',
+      // 작품 메모는 맨 끝(있을 때만). 메모 안에 '== 플롯 ==' 같은 줄이 있어도 그대로 메모다
+      ...(doc.memo && doc.memo.trim() ? ['== 메모 ==', doc.memo.replace(/\s+$/, ''), ''] : []),
     ].join('\n');
   }
   // 이 형식이 아니면 파일 전체를 플롯 글로 본다(아무 들여쓰기 글이나 불러올 수 있게)
@@ -959,11 +985,13 @@ const MM = (() => {
     const trimEnd = a => { a = a.slice(); while (a.length && !a[a.length - 1].trim()) a.pop(); return a.join('\n'); };
     const first = lines.find(l => l.trim()) || '';
     if (first.trim() !== FILE_HEAD && !lines.some(l => l.trim() === '== 플롯 ==')) return { plain: true, text: trimEnd(lines) };
-    const doc = { plain: false, site: '', text: '', cast: '' };
-    const buf = { plot: [], cast: [] };
+    const doc = { plain: false, site: '', text: '', cast: '', memo: '' };
+    const buf = { plot: [], cast: [], memo: [] };
     let sec = null;
     for (const l of lines) {
       const t = l.trim();
+      if (sec === 'memo') { buf.memo.push(l); continue; }          // 메모 뒤는 모두 메모
+      if (t === '== 메모 ==') { sec = 'memo'; continue; }
       if (t === '== 플롯 ==') { sec = 'plot'; continue; }
       if (t === '== 인물 ==') { sec = 'cast'; continue; }
       if (sec) { buf[sec].push(l); continue; }
@@ -973,7 +1001,7 @@ const MM = (() => {
       else if (m[1] === '구조') { const id = Object.keys(STRUCTURES).find(k => STRUCTURES[k].label.replace(/\s/g, '') === m[2].replace(/\s/g, '')); if (id) doc.structure = id; }
       else if (m[1] === '회당 목표 글자 수') { const v = parseInt(m[2].replace(/[^\d]/g, ''), 10); doc.target = v > 0 ? v : null; }
     }
-    doc.text = trimEnd(buf.plot); doc.cast = trimEnd(buf.cast);
+    doc.text = trimEnd(buf.plot); doc.cast = trimEnd(buf.cast); doc.memo = trimEnd(buf.memo);
     return doc;
   }
 
@@ -1081,7 +1109,8 @@ const MM = (() => {
     if (!saved || typeof saved.text !== 'string') return false;
     const flat = t => parse(t || '').flat.map(n => n.depth + '\u0001' + squash(n.text)).join('\n');
     const castNorm = t => String(t || '').split('\n').map(squash).filter(Boolean).join('\n');
-    return squash(saved.site || '') === squash(example.site || '') && flat(saved.text) === flat(example.text) && castNorm(saved.cast) === castNorm(example.cast);
+    const memoSame = !String(saved.memo || '').trim() || castNorm(saved.memo) === castNorm(example.memo);   // 메모만 고쳐도 쓰던 작품
+    return squash(saved.site || '') === squash(example.site || '') && flat(saved.text) === flat(example.text) && castNorm(saved.cast) === castNorm(example.cast) && memoSame;
   }
 
   // ── 따라 하기(튜토리얼): 단계마다 됐는지 확인 ──
@@ -1121,7 +1150,7 @@ const MM = (() => {
 (() => {
   'use strict';
   const $ = s => document.querySelector(s);
-  const ta = $('#outline'), castTa = $('#castText'), siteInput = $('#site');
+  const ta = $('#outline'), castTa = $('#castText'), memoTa = $('#memoText'), siteInput = $('#site');
   const svg = $('#map'), castSvg = $('#castMap'), pane = $('#mapPane'), editor = $('#nodeEditor'), ledgerPane = $('#ledgerPane');
   const structSel = $('#structure'), targetInput = $('#target'), atInput = $('#at');
   const STORE = 'mindmap-novel-v1';
@@ -1167,6 +1196,19 @@ const MM = (() => {
       '공작 -> 민준 : 의심 (5화~)',
       '큰형 <-> 민준 : 갈등',
     ].join('\n'),
+    memo: [
+      '로그라인 — 처형대에서 눈을 감은 몰락 검가의 막내가 열다섯 살 아침으로 돌아와, 가문을 무너뜨린 장부의 빈칸을 쫓는다',
+      '',
+      '세계관 · 규칙',
+      '- 검가(劍家)들은 장부로 서로를 묶는다. 장부의 빈칸은 지워진 거래다',
+      '- 회귀는 낡은 반지와 이어져 있다(아직 누구도 모른다)',
+      '',
+      '톤 · 분위기',
+      '- 차갑고 빠른 복수극, 가족 이야기만은 따뜻하게',
+      '',
+      '자료 · 링크',
+      '- (참고 자료 주소를 여기에)',
+    ].join('\n'),
   };
   EXAMPLE.text = MM.serialize(MM.parse(EXAMPLE.text).flat, MM.epDepth(EXAMPLE.structure));   // 화 묶음 사이 빈 줄
   const TEXT_TITLE = {
@@ -1177,6 +1219,7 @@ const MM = (() => {
     plot: `그림: <kbd>Enter</kbd> 같은 단계 추가 · <kbd>Tab</kbd> 아래 단계 추가 · <kbd>F2</kbd>/두 번 클릭 이름 고치기 · <kbd>Delete</kbd> 지우기 · <kbd>${KEYS.alt}</kbd>+<kbd>↑↓</kbd> 순서 · <kbd>${KEYS.alt}</kbd>+<kbd>←→</kbd> 단계 · 끌어서 옮기기 · 칸 옆 <kbd>−</kbd> 접기 / <kbd>+숫자</kbd> 펴기`,
     cast: '서로 관계는 <code>&lt;-&gt;</code> · 기간 <code>(3~11화)</code> <code>(12화~)</code> <code>(~11화)</code> · 위 "회차 시점"에 화 번호를 넣으면 그때의 관계만 진하게 · 인물을 누르면 그 줄로',
     ledger: '줄 끝 <code>[떡밥 이름]</code>이 심은 곳, <code>[회수 이름]</code>이 거둔 곳 · 이름이 같아야 짝이 맞습니다 · 장소를 누르면 플롯의 그 줄로',
+    memo: '작품 메모는 자유롭게 — 로그라인 · 세계관 규칙 · 톤 · 자료 링크 · 왼쪽 플롯 글을 보면서 적을 수 있어요',
   };
 
   const state = {
@@ -1216,7 +1259,7 @@ const MM = (() => {
   }
 
   // ── 저장 (이 브라우저에만) ──
-  const current = () => ({ site: state.site, text: ta.value, cast: castTa.value, structure: state.structure, target: state.target });
+  const current = () => ({ site: state.site, text: ta.value, cast: castTa.value, memo: memoTa.value, structure: state.structure, target: state.target });
   let saveTimer = 0;
   function save() {
     clearTimeout(saveTimer);
@@ -1249,7 +1292,7 @@ const MM = (() => {
   function closeTyping() { clearTimeout(typingTimer); typing = false; }
   function applyDoc(d) {
     state.site = d.site; siteInput.value = d.site;
-    ta.value = d.text; castTa.value = d.cast;
+    ta.value = d.text; castTa.value = d.cast; memoTa.value = d.memo || '';
     state.structure = MM.STRUCTURES[d.structure] ? d.structure : MM.DEFAULT_STRUCTURE; structSel.value = state.structure;
     state.target = d.target || null; targetInput.value = d.target || '';
     buildFoldBar();                     // 구조가 바뀌었을 수 있다(되돌리기 · 불러오기 · 표 붙여넣기)
@@ -1529,7 +1572,10 @@ const MM = (() => {
   // ── 아래 줄 숫자 ──
   function updateStats() {
     let s;
-    if (state.mode === 'cast') {
+    if (state.mode === 'memo') {
+      const v = memoTa.value, chars = [...v.replace(/\s/g, '')].length;
+      s = chars ? `메모 ${chars.toLocaleString('ko-KR')}자 · ${v.split('\n').length}줄` : '메모가 비어 있어요';
+    } else if (state.mode === 'cast') {
       const { chars, rels } = state.cast;
       s = chars.length ? `인물 ${chars.length}명 · 관계 ${rels.length}개` : '인물 없음';
       if (state.at != null && rels.length) s += ` · ${state.at}화 시점 관계 ${rels.filter(r => MM.activeAt(r, state.at)).length}개`;
@@ -1793,6 +1839,8 @@ const MM = (() => {
 
   // ── 글 칸: 인물 ──
   castTa.addEventListener('input', () => { noteTyping(); syncCast(); });
+  memoTa.addEventListener('input', () => { noteTyping(); save(); updateStats(); });
+  memoTa.addEventListener('keydown', e => { if (e.isComposing || e.keyCode === 229) return; undoKeys(e); });
   castTa.addEventListener('keydown', e => { if (e.isComposing || e.keyCode === 229) return; undoKeys(e); });
   document.addEventListener('selectionchange', () => {
     if (document.activeElement === ta) selectFromCaret();
@@ -1867,11 +1915,11 @@ const MM = (() => {
     $('#textTitle').innerHTML = TEXT_TITLE[cast ? 'cast' : 'plot'];
     $('#help').innerHTML = HELP[m];
     svg.toggleAttribute('hidden', m !== 'plot'); castSvg.toggleAttribute('hidden', !cast);   // SVG에는 .hidden 속성이 없다(TROUBLESHOOTING 6)
-    pane.hidden = m === 'ledger'; ledgerPane.hidden = m !== 'ledger';
+    pane.hidden = m === 'ledger' || m === 'memo'; ledgerPane.hidden = m !== 'ledger'; $('#memoPane').hidden = m !== 'memo';
     $('#mapWrap').classList.toggle('center', cast);
     updateWelcome();
     if (m === 'ledger') tightenTimeline();
-    $('#plotBar').hidden = m !== 'plot'; $('#castBar').hidden = !cast; $('.view-bar').hidden = m === 'ledger';
+    $('#plotBar').hidden = m !== 'plot'; $('#castBar').hidden = !cast; $('.view-bar').hidden = m === 'ledger' || m === 'memo';
     updateStats(); save();
   }
   tabs.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -1902,7 +1950,7 @@ const MM = (() => {
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#ask').hidden) { $('#ask').hidden = true; } });
   $('#exampleBtn').onclick = () => guardReplace('예시 불러오기', () => setDoc(EXAMPLE));
-  $('#clearBtn').onclick = () => guardReplace('새 작품 시작', () => { setDoc({ site: '', text: '', cast: '' }); state.folded = new Set(); render(); setMode('plot'); siteInput.focus(); });
+  $('#clearBtn').onclick = () => guardReplace('새 작품 시작', () => { setDoc({ site: '', text: '', cast: '', memo: '' }); state.folded = new Set(); render(); setMode('plot'); siteInput.focus(); });
   // 클립보드: 새 방식(navigator.clipboard)이 막힌 곳(권한 정책 · 일부 내장 브라우저)에서는 옛 방식(execCommand)으로 한 번 더 (TROUBLESHOOTING 7)
   function copyOld(text) {
     const t = document.createElement('textarea');
@@ -1924,7 +1972,7 @@ const MM = (() => {
   document.addEventListener('pointerdown', e => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
   const plotText = () => (state.site ? state.site + '\n' : '') + MM.serialize(state.flat, MM.epDepth(state.structure)).replace(/^(?=.)/gm, state.site ? '  ' : '');
-  $('#copyTextBtn').onclick = e => copy(e.currentTarget, state.mode === 'cast' ? castTa.value : plotText());
+  $('#copyTextBtn').onclick = e => copy(e.currentTarget, state.mode === 'cast' ? castTa.value : state.mode === 'memo' ? memoTa.value : plotText());
   $('#copyTableBtn').onclick = e => copy(e.currentTarget, MM.synopsisTSV(state.flat, state.structure));
   function saveFile() {
     const blob = new Blob(['﻿' + MM.toFile(current())], { type: 'text/plain;charset=utf-8' });
@@ -2049,7 +2097,7 @@ const MM = (() => {
     tutFocus(null);
     tutEl.innerHTML = `<div class="tut-head">${ICON.mochi}<div><span class="tut-step">따라 하기 ${stopped ? '그만' : '끝'}</span><b>${stopped ? '여기까지 해 봤어요' : '다 했어요! 이제 직접 써 볼까요?'}</b></div></div>` +
       '<ul class="tut-sum"><li>한 줄 = 한 칸, <kbd>Tab</kbd> = 한 단계 아래 (부 › 화 › 장면)</li><li><code>[떡밥 이름]</code> 심기 · <code>[회수 이름]</code> 거두기</li>' +
-      '<li>인물 <code>이름 : 설명</code> · 관계 <code>가 -> 나 : 관계 (12화~)</code>, 서로는 <code>&lt;-&gt;</code></li><li>엑셀 표는 글 칸에 그대로 붙여 넣어도 돼요</li><li>긴 작품은 그림 위 <b>펼치기 → 부까지</b></li></ul>' +
+      '<li>인물 <code>이름 : 설명</code> · 관계 <code>가 -> 나 : 관계 (12화~)</code>, 서로는 <code>&lt;-&gt;</code></li><li>엑셀 표는 글 칸에 그대로 붙여 넣어도 돼요</li><li>긴 작품은 그림 위 <b>펼치기 → 부까지</b></li><li>로그라인 · 세계관 같은 자유 메모는 <b>메모</b> 탭</li></ul>' +
       '<div class="tut-btns"><button data-t="restore">연습 지우고 원래 작품으로</button><button data-t="keep" class="ghost">연습한 그대로 두기</button><button data-t="example" class="ghost">예시 작품 구경하기</button></div>';
     tutEl.hidden = false;
   }
@@ -2063,7 +2111,7 @@ const MM = (() => {
     const snap = { ...current(), folds: [...state.folded] };
     try { localStorage.setItem(TKEY, JSON.stringify(snap)); } catch (e) { /* 이 창 안에서는 그대로 동작 */ }
     tut = { i: 0, snap, startedAt: Date.now(), timer: 0 };
-    setDoc({ site: '연습 작품', text: '', cast: '', structure: '부화장면', target: 5000 });
+    setDoc({ site: '연습 작품', text: '', cast: '', memo: '', structure: '부화장면', target: 5000 });
     state.folded = new Set(); render(); setMode('plot');
     renderTut();
     updateWelcome();
@@ -2075,7 +2123,7 @@ const MM = (() => {
     clearInterval(tut && tut.timer); tut = null; tutFocus(null); tutEl.hidden = true; updateWelcome();
     try { localStorage.removeItem(TKEY); } catch (e) { /* 무시 */ }
     if (choice === 'restore' && snap && typeof snap.text === 'string') {
-      setDoc({ site: snap.site || '', text: snap.text, cast: snap.cast || '', structure: snap.structure, target: snap.target });
+      setDoc({ site: snap.site || '', text: snap.text, cast: snap.cast || '', memo: snap.memo || '', structure: snap.structure, target: snap.target });
       state.folded = new Set(Array.isArray(snap.folds) ? snap.folds : []); render(); save();
       toast('원래 작품으로 돌아왔어요');
     } else if (choice === 'example') { setDoc(EXAMPLE); toast('예시 작품 「검을 버린 막내」예요. 세 탭을 둘러보세요'); }
@@ -2109,8 +2157,8 @@ const MM = (() => {
   if (saved && MM.sameAsExample(saved, EXAMPLE)) { saved = null; staleExample = true; }   // 예전 판이 저절로 저장한 예시는 빈 작품으로(TROUBLESHOOTING 18)
   if (saved && Array.isArray(saved.folds)) state.folded = new Set(saved.folds.filter(k => typeof k === 'string'));
   // 처음 온 사람은 빈 작품에서 시작한다(2026-11-25 사용자 "초기화된 상태에서 이용가능한 서비스로"). 예시는 위쪽 "예시" 단추로
-  applyDoc({ site: '', text: '', cast: '', structure: MM.DEFAULT_STRUCTURE, target: 5000, ...(saved || {}) });
-  setMode(saved && ['plot', 'cast', 'ledger'].includes(saved.mode) ? saved.mode : 'plot');
+  applyDoc({ site: '', text: '', cast: '', memo: '', structure: MM.DEFAULT_STRUCTURE, target: 5000, ...(saved || {}) });
+  setMode(saved && ['plot', 'cast', 'ledger', 'memo'].includes(saved.mode) ? saved.mode : 'plot');
   buildFoldBar();
   setWrap(!(saved && saved.wrap === false));
   if (saved && saved.leftW > 0) setLeftW(saved.leftW, false);
