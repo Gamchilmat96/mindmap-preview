@@ -1075,6 +1075,15 @@ const MM = (() => {
     return { flat, header: false, hasPart: false, rows: rows.length };
   }
 
+  // 저장된 작품이 손대지 않은 예시인가 — 2026-11-25 전 판은 처음 열 때 예시를 저절로 저장했다.
+  // 그 예시는 '쓰던 작품'이 아니므로 빈 작품으로 시작하게 한다(제목 · 플롯 칸 · 인물 글이 모두 같을 때만)
+  function sameAsExample(saved, example) {
+    if (!saved || typeof saved.text !== 'string') return false;
+    const flat = t => parse(t || '').flat.map(n => n.depth + '\u0001' + squash(n.text)).join('\n');
+    const castNorm = t => String(t || '').split('\n').map(squash).filter(Boolean).join('\n');
+    return squash(saved.site || '') === squash(example.site || '') && flat(saved.text) === flat(example.text) && castNorm(saved.cast) === castNorm(example.cast);
+  }
+
   // ── 따라 하기(튜토리얼): 단계마다 됐는지 확인 ──
   // ctx: { flat, structure, cast, mode, backedUp }. 연습 작품은 '부 › 화 › 장면' 구조로 시작한다
   function tutorialChecks({ flat, structure, cast, mode, backedUp }) {
@@ -1103,7 +1112,7 @@ const MM = (() => {
   return {
     parse, serialize, valid, subtreeEnd, prevSibling, nextSibling, parentOf, addChild, addSibling, remove, rename, moveUp, moveDown, indent, outdent, moveTo,
     buildTree, layout, stats,
-    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline, tutorialChecks,
+    STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline, tutorialChecks, sameAsExample,
   };
 })();
 </script>
@@ -2095,7 +2104,9 @@ const MM = (() => {
     document.fonts.addEventListener('loadingdone', redraw);
     document.fonts.ready.then(redraw);
   }
-  const saved = load();
+  let saved = load();
+  let staleExample = false;
+  if (saved && MM.sameAsExample(saved, EXAMPLE)) { saved = null; staleExample = true; }   // 예전 판이 저절로 저장한 예시는 빈 작품으로(TROUBLESHOOTING 18)
   if (saved && Array.isArray(saved.folds)) state.folded = new Set(saved.folds.filter(k => typeof k === 'string'));
   // 처음 온 사람은 빈 작품에서 시작한다(2026-11-25 사용자 "초기화된 상태에서 이용가능한 서비스로"). 예시는 위쪽 "예시" 단추로
   applyDoc({ site: '', text: '', cast: '', structure: MM.DEFAULT_STRUCTURE, target: 5000, ...(saved || {}) });
@@ -2105,7 +2116,7 @@ const MM = (() => {
   if (saved && saved.leftW > 0) setLeftW(saved.leftW, false);
   syncOffBtn();
   bk = loadBackup();
-  if (!bk) { bk = { at: null, sig: docSig(), dirtySince: null, snooze: '' }; saveBackup(); }   // 처음 연 글(예시 등)은 '바뀐 것 없음'에서 시작
+  if (!bk || staleExample) { bk = { at: bk ? bk.at : null, sig: docSig(), dirtySince: null, snooze: '' }; saveBackup(); }   // 빈 작품을 '바뀐 것 없음' 기준으로   // 처음 연 글(예시 등)은 '바뀐 것 없음'에서 시작
   checkDirty();
   setInterval(updateBackupUI, 5 * 60e3);
   (() => {
