@@ -92,7 +92,7 @@ header {
 header h1 { font: 19px var(--font-cute); margin: 0; white-space: nowrap; letter-spacing: -.01em; }
 .tag { font: 11px/18px var(--font-cute); color: var(--ink); background: var(--pink); border: 1.5px solid var(--line); border-radius: 999px; padding: 0 8px; white-space: nowrap; transform: rotate(4deg); }
 .title-field { gap: 8px; white-space: nowrap; font-family: var(--font-cute); color: var(--muted); }
-#site { width: 150px; max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
+#site { width: var(--site-w, 150px); max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
 #site:hover { border-color: var(--edge); }
 #site:focus { border: 2px solid var(--line); background: var(--panel); outline: none; }
 #site::placeholder { color: var(--muted); }
@@ -168,6 +168,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   background-position: 0 0, 0 12px; background-attachment: local;
 }
 #outline::selection, #castText::selection { background: var(--pink); }
+#outline.big-text { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; word-spacing: normal; }
 .text-pane.nowrap #outline, .text-pane.nowrap #castText { white-space: pre; overflow-wrap: normal; }
 .pane-tools { display: flex; justify-content: flex-end; padding: 2px 14px 0; }
 button.mini { font-size: 12px; padding: 0 9px; border-width: 1.5px; box-shadow: 0 2px 0 var(--shade); background: var(--paper); color: var(--muted); }
@@ -190,7 +191,8 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 #mapPane.panning { cursor: grabbing; }
 #mapPane:focus-visible { box-shadow: inset 0 0 0 3px var(--pink); outline: none; }
 #mapWrap { position: relative; display: inline-block; min-width: 100%; min-height: 100%; }
-#mapWrap.center { display: flex; align-items: center; justify-content: center; }
+/* safe: 지도가 칸보다 크면 가운데 맞춤을 풀어 왼쪽 · 위가 잘리지 않게(인물 31명을 100%로 보면 왼쪽 739px에 갈 수 없었다, TROUBLESHOOTING 21) */
+#mapWrap.center { display: flex; align-items: center; justify-content: center; align-items: safe center; justify-content: safe center; }
 #map, #castMap { display: block; flex: none; overflow: visible; }
 #map text, #castMap text { font-family: var(--font-cute); font-size: 14px; fill: var(--ink); user-select: none; pointer-events: none; }
 #map .edge { fill: none; stroke: var(--edge); stroke-width: 2.4; stroke-linecap: round; }
@@ -275,9 +277,36 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 }
 #memoText::placeholder { color: var(--muted); opacity: .55; }
 .tabs button[data-mode="memo"][aria-selected="true"] { background: var(--lav); }
+.tabs button[data-mode="check"][aria-selected="true"] { background: var(--sky); }
+/* 점검 탭 */
+.box.names > h2 { background: var(--pink); } .box.titles > h2 { background: var(--lav); }
+.box-note { margin: 0; padding: 8px 16px 0; font-size: 12.5px; color: var(--muted); }
+.ledger .also { display: block; font: 11.5px var(--font-text); color: var(--muted); }
+#checkPane .ledger td.name { min-width: 104px; }
+#checkPane .ledger td:last-child { min-width: 130px; }
+.tbl-scroll { overflow-x: auto; }
+@media (max-width: 760px) { table.ledger.appear { min-width: 680px; } }
+.state.note { background: var(--paper); color: var(--muted); }
+.box .empty-row { padding: 12px 16px 14px; color: var(--muted); font: 14px var(--font-cute); }
+/* 찾아 바꾸기 */
+.ask-card.find-card { text-align: left; width: min(520px, 100%); }
+.ask-card.find-card h3, .ask-card.find-card > p { text-align: center; }
+.find-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.find-fields label { flex-direction: column; align-items: stretch; gap: 4px; }
+.find-fields input { width: 100%; font-size: 15px; }
+.find-scope { display: flex; gap: 14px; margin-bottom: 10px; }
+.find-scope label { color: var(--ink); }
+.find-info { min-height: 44px; font-size: 13px; background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 8px 12px; margin-bottom: 14px; }
+.find-info b { font: 14.5px var(--font-cute); font-weight: 400; }
+.find-info ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.7; max-height: 150px; overflow: auto; }
+.find-info mark { background: var(--butter); border-radius: 3px; padding: 0 1px; }
+.find-warn { margin: 4px 0 0; color: var(--warn); }
+.find-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.find-btns .primary { background: var(--pink); }
+.pane-tools { gap: 6px; }
 
 /* ── 떡밥 장부 ── */
-#ledgerPane { flex: 1; overflow: auto; min-height: 0; padding: 24px 22px; background-color: var(--paper);
+#ledgerPane, #checkPane { flex: 1; overflow: auto; min-height: 0; padding: 24px 22px; background-color: var(--paper);
   background-image: linear-gradient(var(--grid) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--grid) 1.5px, transparent 1.5px); background-size: 26px 26px; }
 .ledger-wrap { max-width: 980px; display: flex; flex-direction: column; gap: 22px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding-top: 6px; }
@@ -305,12 +334,12 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 .tl-row + .tl-row .tl-track { border-top: 2px dotted var(--soft-line); }
 .tl-axis .tl-track { height: 22px; }
 .tl-tick { position: absolute; top: 2px; transform: translateX(-50%); font: 12px var(--font-cute); color: var(--muted); white-space: nowrap; }
-.tl-bar { position: absolute; top: 50%; height: 10px; margin-top: -5px; border-radius: 6px; }
+.tl-bar { z-index: 0; position: absolute; top: 50%; height: 10px; margin-top: -5px; border-radius: 6px; }
 .tl-bar.closed { background: var(--mint); border: 1.5px solid var(--line); }
 .tl-bar.open { background: repeating-linear-gradient(90deg, var(--peach) 0 10px, transparent 10px 16px); opacity: .95; }
 .tl-bar.warn { background: var(--warn-soft); border: 1.5px dashed var(--warn); }
 .tl-dot {
-  position: absolute; top: 50%; width: 30px; height: 28px; margin: -15px 0 0 -15px; padding: 0;
+  z-index: 2; position: absolute; top: 50%; width: 30px; height: 28px; margin: -15px 0 0 -15px; padding: 0;
   border: 0; background: none; box-shadow: none; border-radius: 50%; cursor: pointer; transition: transform .12s;
 }
 .tl-dot svg { width: 30px; height: 28px; display: block; pointer-events: none; }
@@ -319,6 +348,10 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 .tl-row.tight .tl-dot { width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid var(--line); }
 .tl-row.tight .tl-dot svg { display: none; }
 .tl-row.tight .tl-dot.plant { background: var(--peach-d); } .tl-row.tight .tl-dot.payoff { background: var(--sky-d); } .tl-row.tight .tl-dot.warn { background: var(--warn); }
+.tl-again { z-index: 1; position: absolute; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; padding: 0; border: 2px solid var(--line); border-radius: 50%; background: var(--peach-d); box-shadow: none; cursor: pointer; }
+.tl-again.payoff { background: var(--sky-d); }
+.tl-again:hover { transform: scale(1.4); box-shadow: none; }
+.tl-again-key { display: inline-block; width: 9px; height: 9px; border: 2px solid var(--line); border-radius: 50%; background: var(--peach-d); }
 .tl-empty { padding: 12px 0 6px; color: var(--muted); font: 14px var(--font-cute); }
 .h2-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .tl-toggle { font-size: 12.5px; padding: 1px 10px; }
@@ -425,6 +458,11 @@ footer {
 #stats { font: 13.5px var(--font-cute); color: var(--ink); }
 kbd, footer code { font: 11.5px var(--font-text); border: 1.5px solid var(--line); border-radius: 6px; padding: 0 5px; background: var(--paper); color: var(--ink); }
 kbd { border-bottom-width: 3px; }
+/* 노트북 너비: 위쪽 막대를 한 줄로 두려고 되돌리기 · 다시는 그림만, 탭은 조금 좁게(점검 탭 · 넓어진 제목 칸 몫) */
+@media (min-width: 761px) and (max-width: 1400px) {
+  #undoBtn .wd, #redoBtn .wd { display: none; }
+  .tabs button { padding: 5px 9px; }
+}
 @media (max-width: 760px) {
   header { padding: 8px 12px; gap: 8px; }
   .brand { width: 100%; }
@@ -441,7 +479,8 @@ kbd { border-bottom-width: 3px; }
   .splitter { display: none; }
   .pane-title { margin: 8px 10px 2px; padding: 8px 10px; }
   #outline, #castText { padding: 8px 12px 12px 28px; }
-  #ledgerPane, .memo-pane { padding: 12px; }
+  #ledgerPane, #checkPane, .memo-pane { padding: 12px; }
+  .find-fields { grid-template-columns: 1fr; }
   .tl-row { grid-template-columns: 86px 1fr; gap: 8px; }
   .fold-bar { border-left: 0; padding-left: 0; }
   footer { padding: 6px 12px; }
@@ -471,6 +510,7 @@ kbd { border-bottom-width: 3px; }
     <button role="tab" data-mode="plot" aria-selected="true">플롯 지도</button>
     <button role="tab" data-mode="cast" aria-selected="false">인물 지도</button>
     <button role="tab" data-mode="ledger" aria-selected="false">떡밥 장부<span id="openCount" class="badge" hidden></span></button>
+    <button role="tab" data-mode="check" aria-selected="false" title="인물이 언제 처음 · 마지막으로 나오는지, 비슷한 이름, 같은 회차 제목">점검<span id="checkCount" class="badge" hidden></span></button>
     <button role="tab" data-mode="memo" aria-selected="false" title="그림으로 바뀌지 않는 자유 메모(로그라인 · 세계관 · 톤 · 자료)">메모</button>
   </nav>
   <span class="spacer header-spacer"></span>
@@ -498,7 +538,7 @@ kbd { border-bottom-width: 3px; }
 <main class="panes">
   <section class="text-pane">
     <div class="pane-title" id="textTitle"></div>
-    <div class="pane-tools"><button id="wrapBtn" class="mini" aria-pressed="true" title="긴 줄을 칸 폭에 맞춰 접어 보기 / 한 줄로 보기">긴 줄 줄바꿈: 켬</button></div>
+    <div class="pane-tools"><button id="findBtn" class="mini" title="플롯 · 인물 · 메모에서 같은 글자를 한꺼번에 바꾸기(인물 이름 바꿀 때)">찾아 바꾸기</button><button id="wrapBtn" class="mini" aria-pressed="true" title="긴 줄을 칸 폭에 맞춰 접어 보기 / 한 줄로 보기">긴 줄 줄바꿈: 켬</button></div>
     <textarea id="outline" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="플롯 글" placeholder="1부 첫 번째 이야기&#10;  첫 만남&#10;    비 오는 골목에서 마주치다 [떡밥 반지]&#10;&#10;  두 번째 만남&#10;    반지가 빛나다 [회수 반지]"></textarea>
     <textarea id="castText" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="인물 글" placeholder="민준 : 주인공&#10;서아 : 조력자&#10;&#10;민준 -> 서아 : 신뢰 (5화~)" hidden></textarea>
   </section>
@@ -513,7 +553,7 @@ kbd { border-bottom-width: 3px; }
       <span id="castBar" class="group" hidden>
         <label>회차 시점 <input id="at" type="number" min="1" step="1" inputmode="numeric" placeholder="전체"> 화</label>
         <button id="atAll" title="모든 관계 보기">전체</button>
-        <button id="offBtn" class="mini" aria-pressed="true" title="회차 시점에 없는 관계를 숨길지 흐리게 둘지" disabled>지난 관계: 숨김</button>
+        <button id="offBtn" class="mini" aria-pressed="true" title="회차 시점에 없는 관계(와 그때 관계가 없는 인물)를 숨길지 흐리게 둘지" disabled>지난 관계: 숨김</button>
       </span>
       <span class="spacer"></span>
       <span id="zoomGroup" class="group">
@@ -531,6 +571,7 @@ kbd { border-bottom-width: 3px; }
       </div>
     </div>
     <div id="ledgerPane" hidden></div>
+    <div id="checkPane" hidden></div>
     <div id="memoPane" class="memo-pane" hidden>
       <div class="memo-page">
         <div class="memo-head"><b>작품 메모</b><span>그림으로 바뀌지 않는 자유 메모예요 · 자동 저장 · 파일로 저장할 때 함께 들어가요</span></div>
@@ -549,6 +590,16 @@ kbd { border-bottom-width: 3px; }
 <div id="toast" class="toast" role="status" hidden></div>
 <div id="tut" class="tut" role="dialog" aria-live="polite" aria-label="따라 하기" hidden></div>
 <div id="ask" class="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle" hidden></div>
+<div id="findBox" class="ask" role="dialog" aria-modal="true" aria-labelledby="findTitle" hidden>
+  <div class="ask-card find-card">
+    <h3 id="findTitle">찾아 바꾸기</h3>
+    <p id="findLead">플롯 · 인물 · 메모에서 같은 글자를 한꺼번에 바꿔요. 인물 이름을 바꿀 때 좋아요.</p>
+    <div class="find-fields"><label>찾을 말 <input id="findFrom" autocomplete="off" spellcheck="false"></label><label>바꿀 말 <input id="findTo" autocomplete="off" spellcheck="false"></label></div>
+    <div class="find-scope"><label><input type="checkbox" value="plot" checked> 플롯</label><label><input type="checkbox" value="cast" checked> 인물</label><label><input type="checkbox" value="memo" checked> 메모</label></div>
+    <div id="findInfo" class="find-info" aria-live="polite"></div>
+    <div class="find-btns"><button id="findClose" class="ghost">닫기</button><button id="findGo" class="primary">모두 바꾸기</button></div>
+  </div>
+</div>
 
 <script id="core">
 // ── 핵심 로직: 화면(DOM) 없이 동작한다. qa/core.test.mjs가 이 블록만 떼어 검사한다. ──
@@ -815,7 +866,11 @@ const MM = (() => {
       const status = !plant ? 'orphan' : !payoff ? 'open' : payoff.i < plant.i ? 'early' : 'closed';
       const age = status === 'open' && plant.ep ? lastEp - plant.ep : null;               // 심은 뒤 몇 화 지났나
       const span = status === 'closed' && plant.ep && payoff.ep ? payoff.ep - plant.ep : null; // 몇 화 만에 거뒀나
-      return { name: x.name, status, plant, payoff, plants: x.plants, payoffs: x.payoffs, age, span };
+      // 다시 꺼낸 곳: 첫 심기 말고 또 [떡밥]을 단 곳 · 짝으로 고른 회수 말고 또 [회수]를 단 곳(HANDOFF §3 A′ 5 · A″ 5 · A‴ 3)
+      const again = [...x.plants.slice(1).map(p => ({ kind: 'plant', i: p.i, ep: p.ep })), ...x.payoffs.filter(o => o !== payoff).map(o => ({ kind: 'payoff', i: o.i, ep: o.ep }))].sort((a, b) => a.i - b.i);
+      const lastPlant = x.plants[x.plants.length - 1];
+      const quiet = status === 'open' && x.plants.length > 1 && lastPlant.ep ? lastEp - lastPlant.ep : null;   // 마지막으로 꺼낸 뒤 몇 화
+      return { name: x.name, status, plant, payoff, plants: x.plants, payoffs: x.payoffs, age, span, again, quiet };
     });
     items.sort((a, b) => rank[a.status] - rank[b.status] || (b.age ?? -1) - (a.age ?? -1) || (a.plant || a.payoff).i - (b.plant || b.payoff).i);
     return {
@@ -830,17 +885,33 @@ const MM = (() => {
   // 기간: (12화~) 12화부터 · (~11화) 11화까지 · (3~11화) · (12화) = 12화부터
   const ARROW = /\s*(<->|↔|->|→)\s*/;
   const RANGE = /\(\s*(?:(\d+)\s*화?)?\s*(~|-|–)?\s*(?:(\d+)\s*화?)?\s*\)\s*$/;
+  // 인물 줄의 이름 뒤 괄호는 다른 이름(호칭 · 별명): "곽두식(곽반장, 반장님) : 철근 반장".
+  // 관계 줄에 다른 이름을 써도 같은 사람이고, 점검 탭의 인물 등장에서도 센다
+  const ALIAS = /^(.+?)\s*\(([^()]*)\)$/;
+  function splitName(raw) {
+    const m = raw.match(ALIAS);
+    return m && squash(m[1]) ? { name: squash(m[1]), aliases: m[2].split(/[,，、·]/).map(squash).filter(Boolean) } : { name: raw, aliases: [] };
+  }
   function parseCast(text) {
-    const chars = [], rels = [], byName = new Map();
+    const chars = [], rels = [], byName = new Map(), aliasOf = new Map();
     const ensure = (name, line) => {
-      if (!byName.has(name)) { byName.set(name, chars.length); chars.push({ name, desc: '', line, declared: false }); }
+      name = aliasOf.get(name) || name;
+      if (!byName.has(name)) { byName.set(name, chars.length); chars.push({ name, desc: '', line, declared: false, aliases: [] }); }
       return byName.get(name);
     };
-    text.split('\n').forEach((raw, ln) => {
+    const lines = text.split('\n').map(raw => {
       const s = squash(raw.replace(/^[ \t]+/, '').replace(BULLET, ''));
-      if (!s) return;
       const colon = s.indexOf(':'), am = s.match(ARROW);
-      if (am && (colon < 0 || am.index < colon)) {
+      return { s, colon, am, rel: !!(am && (colon < 0 || am.index < colon)) };
+    });
+    lines.forEach(({ s, colon, rel }) => {                // 먼저 다른 이름을 모은다(관계 줄이 인물 줄보다 위에 있어도 되게)
+      if (!s || rel) return;
+      const { name, aliases } = splitName(squash(colon < 0 ? s : s.slice(0, colon)));
+      aliases.forEach(a => { if (a !== name && !aliasOf.has(a)) aliasOf.set(a, name); });
+    });
+    lines.forEach(({ s, colon, am, rel }, ln) => {
+      if (!s) return;
+      if (rel) {
         const from = squash(s.slice(0, am.index));
         const after = s.slice(am.index + am[0].length), c2 = after.indexOf(':');
         const to = squash(c2 < 0 ? after : after.slice(0, c2));
@@ -855,21 +926,29 @@ const MM = (() => {
         }
         rels.push({ from: ensure(from, ln), to: ensure(to, ln), label, start, end, mutual: am[1] === '<->' || am[1] === '↔', line: ln });
       } else {
-        const name = squash(colon < 0 ? s : s.slice(0, colon));
+        const { name, aliases } = splitName(squash(colon < 0 ? s : s.slice(0, colon)));
         const desc = colon < 0 ? '' : squash(s.slice(colon + 1));
         if (!name) return;
         const c = chars[ensure(name, ln)];
-        if (!c.declared) { c.declared = true; c.line = ln; c.desc = desc; }
+        if (!c.declared) { c.declared = true; c.line = ln; c.desc = desc; c.aliases = aliases; }
       }
     });
     return { chars, rels };
   }
   const activeAt = (r, at) => at == null || ((r.start == null || r.start <= at) && (r.end == null || at <= r.end));
-  // 회차 시점에 살아 있는 관계만 남긴 인물 목록(지도 배치용). keep[k] = 원래 관계 번호. at이 없으면 전부
-  function castAt(cast, at) {
+  // 회차 시점에 살아 있는 관계만 남긴 인물 목록(지도 배치용). keep[k] = 원래 관계 번호, ck[j] = 원래 인물 번호. at이 없으면 전부.
+  // o.hideChars면 그 시점에 관계가 하나도 없는 인물도 뺀다(31명이면 지도가 30%로 줄여도 넘쳤다, TROUBLESHOOTING 21).
+  // 관계를 아예 안 적은 인물은 시점과 상관이 없으니 남긴다
+  function castAt(cast, at, o = {}) {
     const keep = [];
     cast.rels.forEach((r, i) => { if (activeAt(r, at)) keep.push(i); });
-    return { chars: cast.chars, rels: keep.map(i => cast.rels[i]), keep };
+    if (!o.hideChars || at == null) return { chars: cast.chars, rels: keep.map(i => cast.rels[i]), keep, ck: cast.chars.map((_, k) => k) };
+    const any = new Set(), now = new Set();
+    cast.rels.forEach(r => { any.add(r.from); any.add(r.to); });
+    keep.forEach(i => { now.add(cast.rels[i].from); now.add(cast.rels[i].to); });
+    const ck = cast.chars.map((_, k) => k).filter(k => now.has(k) || !any.has(k));
+    const to = new Map(ck.map((k, j) => [k, j]));
+    return { chars: ck.map(k => cast.chars[k]), rels: keep.map(i => ({ ...cast.rels[i], from: to.get(cast.rels[i].from), to: to.get(cast.rels[i].to) })), keep, ck };
   }
   function rangeText(r) {
     return r.start != null && r.end != null ? `${r.start}~${r.end}화` : r.start != null ? `${r.start}화~` : r.end != null ? `~${r.end}화` : '';
@@ -1019,9 +1098,113 @@ const MM = (() => {
     const rows = lg.items.map(x => {
       const from = x.plant ? x.plant.ep : null;
       const to = x.status === 'open' ? (from != null ? last : null) : x.payoff ? x.payoff.ep : null;
-      return { name: x.name, status: x.status, from, to, plantI: x.plant ? x.plant.i : null, payoffI: x.payoff ? x.payoff.i : null };
+      return { name: x.name, status: x.status, from, to, plantI: x.plant ? x.plant.i : null, payoffI: x.payoff ? x.payoff.i : null, again: (x.again || []).filter(a => a.ep != null) };
     });
     return { last, ticks, rows };
+  }
+
+  // ════ 점검: 찾아 바꾸기 · 비슷한 이름 · 같은 회차 제목 · 인물 등장 ════
+  // 글자 그대로 찾아 바꾼다(정규식 아님). count = 바꾼 곳 수
+  function replaceAll(text, find, to) {
+    if (!find) return { text, count: 0 };
+    const parts = String(text).split(find);
+    return { text: parts.join(to), count: parts.length - 1 };
+  }
+  // 찾을 말이 든 줄(미리 보기): [{ line, text, count }]
+  function findLines(text, find) {
+    if (!find) return [];
+    const out = [];
+    String(text).split('\n').forEach((l, line) => { const c = l.split(find).length - 1; if (c) out.push({ line, text: l, count: c }); });
+    return out;
+  }
+
+  // 한글 한 글자 → 자모(초성 · 중성 · 종성). 한글이 아니면 그 글자 그대로
+  function jamo(s) {
+    const out = [];
+    for (const ch of s) {
+      const c = ch.charCodeAt(0) - 0xAC00;
+      if (c >= 0 && c < 11172) { out.push('i' + Math.floor(c / 588), 'm' + Math.floor(c % 588 / 28)); if (c % 28) out.push('f' + c % 28); }
+      else out.push(ch);
+    }
+    return out;
+  }
+  const initials = s => [...s].map(ch => { const c = ch.charCodeAt(0) - 0xAC00; return c >= 0 && c < 11172 ? Math.floor(c / 588) : ch; }).join(',');
+  function editDist(a, b) {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[a.length][b.length];
+  }
+  // 성과 이름 나누기: 한글 세 글자면 첫 글자가 성, 네 글자면 두 글자 성(남궁 · 황보 …)일 때만. 두 글자는 이름만 있는 것으로 본다
+  const SURNAME2 = ['남궁', '황보', '제갈', '선우', '독고', '사공', '서문', '동방', '어금', '망절'];
+  function givenName(name) {
+    const a = [...name];
+    if (!/^[가-힣]+$/.test(name)) return name;
+    if ((a.length === 3 || a.length === 4) && SURNAME2.includes(a.slice(0, 2).join(''))) return a.slice(2).join('');
+    if (a.length === 3) return a.slice(1).join('');
+    return name;
+  }
+  // 비슷한 이름 짝: level 'check'(헷갈리기 쉬움) · 'note'(참고: 이름 첫 글자가 같음)
+  function similarNames(names) {
+    const list = [...new Set(names.map(n => squash(n)).filter(n => [...n].length >= 2))];
+    const out = [];
+    for (let x = 0; x < list.length; x++) for (let y = x + 1; y < list.length; y++) {
+      const a = list[x], b = list[y], ga = givenName(a), gb = givenName(b);
+      let why = null, level = 'check';
+      if (a.includes(b) || b.includes(a)) why = `‘${a.length < b.length ? a : b}’ 글자로 찾으면 ‘${a.length < b.length ? b : a}’도 함께 찾아져요`;
+      else if (ga === gb && ga !== a && gb !== b) why = `성만 다르고 이름(${ga})이 같아요`;
+      else if (/^[가-힣]+$/.test(ga + gb) && [...ga].length >= 2 && [...gb].length >= 2) {
+        const dist = editDist(jamo(ga), jamo(gb));
+        if (dist <= 1) why = `이름(${ga} · ${gb})의 소리가 거의 같아요`;
+        else if (dist <= 2 && initials(ga) === initials(gb)) why = `이름(${ga} · ${gb})의 자음이 같고 소리가 비슷해요`;
+        else if ([...ga].length >= 2 && [...gb].length >= 2 && [...ga][0] === [...gb][0] && ga !== a && gb !== b) { why = `이름 첫 글자(${[...ga][0]})가 같아요`; level = 'note'; }
+      }
+      if (why) out.push({ a, b, why, level });
+    }
+    return out.sort((p, q) => (p.level === q.level ? 0 : p.level === 'check' ? -1 : 1));
+  }
+  // 같은 회차 제목(꼬리표 뺀 제목이 같은 화): [{ title, places: [{ i, ep }] }]. "새 화"처럼 단추로 막 만든 이름은 뺀다
+  function sameTitles(flat, id) {
+    const deco = decorate(flat, id), by = new Map();
+    deco.forEach((d, i) => {
+      if (!d.epNo || !d.title || /^새 \S+$/.test(d.title)) return;
+      if (!by.has(d.title)) by.set(d.title, []);
+      by.get(d.title).push({ i, ep: d.epNo });
+    });
+    return [...by].filter(([, v]) => v.length > 1).map(([title, places]) => ({ title, places }));
+  }
+  // 인물 등장 장부: 플롯 줄에 인물이 나온 곳. 화 번호는 그 줄이 속한 화. 이렇게 찾는다:
+  //  ① 이름 그대로(한재건) ② 인물 줄 괄호 속 다른 이름(곽반장) ③ 성을 뺀 이름 + 조사(재건이 · 재건과 · 재건의 …).
+  //  ③은 '재건축' · '재건구조'처럼 낱말 안에 든 것은 세지 않으려고 뒤에 흔한 조사나 문장부호 · 끝이 올 때만 센다
+  // late = 관계 기간은 시작했는데 플롯에는 아직 안 나옴(관계 시작 화 < 첫 등장 화). 첫 줄 인물은 빼고
+  const JOSA = '(?:이|가|은|는|을|를|의|에|에게|에게서|한테|께|와|과|도|만|랑|이랑|아|야|으로|로|까지|부터|처럼|보다|조차|마저|씨|님|이가|이는|이를|이의|이와|이도|이만|이에게|이한테|이랑|이처럼|이보다|이다|이었다|이야)?';
+  const reEsc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  function nameMatchers(cast) {
+    const taken = new Set(cast.chars.flatMap(c => [c.name, ...(c.aliases || [])]));
+    return cast.chars.map(c => {
+      const words = [c.name, ...(c.aliases || [])].filter(Boolean);
+      const g = /\s/.test(c.name) ? c.name.split(/\s+/).pop() : givenName(c.name);   // 에드먼드 베일 → 베일
+      const auto = g !== c.name && [...g].length >= 2 && !taken.has(g) ? new RegExp('(?:^|[^가-힣])' + reEsc(g) + JOSA + '(?=$|[^가-힣])') : null;
+      return { words, auto, given: auto ? g : null };
+    });
+  }
+  function appearances(flat, id, cast) {
+    const deco = decorate(flat, id);
+    const lastEp = deco.reduce((m, d) => d.epNo || m, 0);
+    const ms = nameMatchers(cast);
+    return cast.chars.map((c, k) => {
+      const places = [], m = ms[k];
+      flat.forEach((n, i) => { if (m.words.some(w => n.text.includes(w)) || (m.auto && m.auto.test(n.text))) places.push({ i, ep: deco[i].inEp }); });
+      const withEp = places.filter(p => p.ep != null);
+      const first = withEp[0] || places[0] || null, last = withEp[withEp.length - 1] || places[places.length - 1] || null;
+      const eps = new Set(withEp.map(p => p.ep)).size;
+      const starts = cast.rels.filter(r => (r.from === k || r.to === k) && r.start != null).map(r => r.start);
+      const relStart = starts.length ? Math.min(...starts) : null;
+      // 첫 줄 인물(주인공)은 뺀다: 플롯 줄은 주인공 이름 없이 쓰는 일이 많다("처형대에서 눈을 감다")
+      const late = k > 0 && !!(relStart != null && first && first.ep != null && first.ep > relStart);
+      const quiet = last && last.ep != null && lastEp ? lastEp - last.ep : null;
+      return { k, name: c.name, declared: c.declared, words: m.words, given: m.given, first, last, count: places.length, eps, relStart, late, quiet };
+    });
   }
 
   // 백업 상태. at: 마지막으로 파일 저장한 시각(ms, 없으면 null), dirtySince: 그 뒤 처음 바뀐 시각(없으면 안 바뀜)
@@ -1142,6 +1325,7 @@ const MM = (() => {
     parse, serialize, valid, subtreeEnd, prevSibling, nextSibling, parentOf, addChild, addSibling, remove, rename, moveUp, moveDown, indent, outdent, moveTo,
     buildTree, layout, stats,
     STRUCTURES, DEFAULT_STRUCTURE, levelName, epDepth, splitTags, decorate, ledger, parseCast, activeAt, castAt, rangeText, relText, castLayout, shortDesc, ledgerTimeline, synopsisTSV, toFile, fromFile, keyNames, foldKeys, foldKeysAt, backupStatus, sig, parseTSV, tableToOutline, tutorialChecks, sameAsExample,
+    replaceAll, findLines, jamo, givenName, similarNames, sameTitles, appearances,
   };
 })();
 </script>
@@ -1219,6 +1403,7 @@ const MM = (() => {
     plot: `그림: <kbd>Enter</kbd> 같은 단계 추가 · <kbd>Tab</kbd> 아래 단계 추가 · <kbd>F2</kbd>/두 번 클릭 이름 고치기 · <kbd>Delete</kbd> 지우기 · <kbd>${KEYS.alt}</kbd>+<kbd>↑↓</kbd> 순서 · <kbd>${KEYS.alt}</kbd>+<kbd>←→</kbd> 단계 · 끌어서 옮기기 · 칸 옆 <kbd>−</kbd> 접기 / <kbd>+숫자</kbd> 펴기`,
     cast: '서로 관계는 <code>&lt;-&gt;</code> · 기간 <code>(3~11화)</code> <code>(12화~)</code> <code>(~11화)</code> · 위 "회차 시점"에 화 번호를 넣으면 그때의 관계만 진하게 · 인물을 누르면 그 줄로',
     ledger: '줄 끝 <code>[떡밥 이름]</code>이 심은 곳, <code>[회수 이름]</code>이 거둔 곳 · 이름이 같아야 짝이 맞습니다 · 장소를 누르면 플롯의 그 줄로',
+    check: '이름은 성을 뺀 부르는 이름(재건이 · 재건과 …)도 셉니다 · 별명은 인물 줄에 <code>곽두식(곽반장) : …</code>처럼 괄호로 · 장소를 누르면 플롯의 그 줄로',
     memo: '작품 메모는 자유롭게 — 로그라인 · 세계관 규칙 · 톤 · 자료 링크 · 왼쪽 플롯 글을 보면서 적을 수 있어요',
   };
 
@@ -1228,26 +1413,47 @@ const MM = (() => {
     folded: new Set(), keys: [], visible: new Set(), showClosed: null, wrap: true, hideOff: true,
   };
   let selected = -2;          // -2 없음, -1 작품 제목(뿌리), 0 이상 = 플롯 목록 위치
-  let zoom = 1;
+  let zoom = 1, castZoom = 1;   // 배율은 지도마다 따로(인물 지도를 줄이면 플롯 지도까지 줄던 문제, TROUBLESHOOTING 21)
+  const ZOOM_MIN = 0.15, ZOOM_MAX = 2;
   let L = null, CL = null;    // 마지막 배치 결과 (플롯 · 인물)
   let pieceCache = [];
 
   // ── 글자 폭 재기 (SVG 글꼴과 같게) ──
   const ctx = document.createElement('canvas').getContext('2d');
   const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--font-cute').trim();
-  const textW = (font, text) => { ctx.font = font + ' ' + fontFamily; return ctx.measureText(text).width; };
+  // 잰 폭은 기억해 둔다. 600화 작품에서 글자 하나 칠 때마다 제목 2천여 개를 다시 재느라 0.1~0.25초 걸렸다(TROUBLESHOOTING 20).
+  // 글꼴이 늦게 내려받아지면 폭이 달라지므로 그때 비운다(아래 '시작'의 redraw)
+  const widthCache = new Map(), fitCache = new Map();
+  const clearWidths = () => { widthCache.clear(); fitCache.clear(); };
+  const textFont = getComputedStyle(document.documentElement).getPropertyValue('--font-text').trim();
+  const measure = (font, text) => {
+    const k = font + '|' + text;
+    let w = widthCache.get(k);
+    if (w === undefined) {
+      if (widthCache.size > 60000) clearWidths();        // 아주 오래 쓰면 한 번 비운다(메모리)
+      ctx.font = font; w = ctx.measureText(text).width; widthCache.set(k, w);
+    }
+    return w;
+  };
+  const textW = (size, text) => measure(size + ' ' + fontFamily, text);
   const mRoot = t => textW('16px', t), mNode = t => textW('14px', t), mSmall = t => textW('12px', t), mSmallBold = t => textW('12px', t), mName = t => textW('14px', t), mName15 = t => textW('15px', t);
-  const mDesc = t => { ctx.font = '12px ' + getComputedStyle(document.documentElement).getPropertyValue('--font-text').trim(); return ctx.measureText(t).width; };
+  const mDesc = t => measure('12px ' + textFont, t);
 
   // ── 플롯 칸 안 내용: 회차 번호 · 제목 · 떡밥 꼬리표 ──
   const tagText = t => (t.kind === 'plant' ? '떡밥 ' : '회수 ') + t.name;
   // 그림 칸에는 제목을 이 폭까지만 보여 주고 '…'(전체는 글 칸 · 마우스를 올리면 보임)
   const MAX_TITLE_W = 250;
   function fitTitle(t) {
-    if (mNode(t) <= MAX_TITLE_W) return t;
-    const a = [...t]; let lo = 1, hi = a.length - 1;
-    while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (mNode(a.slice(0, mid).join('').trimEnd() + '…') <= MAX_TITLE_W) lo = mid; else hi = mid - 1; }
-    return a.slice(0, lo).join('').trimEnd() + '…';
+    let shown = fitCache.get(t);
+    if (shown !== undefined) return shown;
+    if (mNode(t) <= MAX_TITLE_W) shown = t;
+    else {
+      const a = [...t]; let lo = 1, hi = a.length - 1;
+      while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (mNode(a.slice(0, mid).join('').trimEnd() + '…') <= MAX_TITLE_W) lo = mid; else hi = mid - 1; }
+      shown = a.slice(0, lo).join('').trimEnd() + '…';
+    }
+    fitCache.set(t, shown);
+    return shown;
   }
   function pieces(i) {
     const d = state.deco[i], list = []; let x = 0, cut = false;
@@ -1290,8 +1496,24 @@ const MM = (() => {
     commit(); updateUndoButtons();
   }
   function closeTyping() { clearTimeout(typingTimer); typing = false; }
+  // 작품 제목 칸: 글자만큼 넓어진다(150~380px). 웹소설 제목은 17자 안팎이라 150px이면 앞 9자만 보였다(HANDOFF §3 A‴ 4)
+  // 넓은 화면에서는 위쪽 막대가 두 줄로 넘어가지 않는 만큼만 넓힌다(1280px에서도 한 줄이던 막대를 지키려고)
+  const headerEl = document.querySelector('header'), brandEl = document.querySelector('.brand'), menuEl = document.querySelector('#moreMenu');
+  const headerWraps = () => menuEl.getBoundingClientRect().top - brandEl.getBoundingClientRect().top > 20;
+  function fitSite() {
+    let w = Math.min(380, Math.max(150, Math.ceil(textW('16px', siteInput.value || siteInput.placeholder)) + 30));
+    siteInput.title = siteInput.value;
+    siteInput.style.setProperty('--site-w', w + 'px');
+    if (innerWidth <= 760 || !headerEl.clientWidth) return;     // 좁은 화면은 원래 여러 줄 · 안 보이는 창은 재지 않는다
+    while (w > 150 && headerWraps()) { w = Math.max(150, w - 16); siteInput.style.setProperty('--site-w', w + 'px'); }
+  }
+  // 창 크기 · 탭 폭(떡밥 · 점검 숫자가 나타나면 넓어짐)이 바뀌면 다시 맞춘다
+  let fitSiteRaf = 0;
+  const refitSite = () => { cancelAnimationFrame(fitSiteRaf); fitSiteRaf = requestAnimationFrame(fitSite); };
+  if (window.ResizeObserver) { const ro = new ResizeObserver(refitSite); ro.observe(headerEl); ro.observe(document.querySelector('.tabs')); }
+  else addEventListener('resize', refitSite);
   function applyDoc(d) {
-    state.site = d.site; siteInput.value = d.site;
+    state.site = d.site; siteInput.value = d.site; fitSite();
     ta.value = d.text; castTa.value = d.cast; memoTa.value = d.memo || '';
     state.structure = MM.STRUCTURES[d.structure] ? d.structure : MM.DEFAULT_STRUCTURE; structSel.value = state.structure;
     state.target = d.target || null; targetInput.value = d.target || '';
@@ -1315,17 +1537,26 @@ const MM = (() => {
   function updateUndoButtons() { $('#undoBtn').disabled = !hist.past.length; $('#redoBtn').disabled = !hist.future.length; }
 
   // ── 글 → 그림 ──
-  function syncFromText(fromCaret = true) {
+  // 큰 작품(칸 600개 넘음)은 글자를 칠 때 그림을 바로 다시 그리지 않고 손을 멈추고 0.2초 뒤에 그린다.
+  // 플롯 글이 4만 자를 넘으면 글 칸만 시스템 글꼴로 쓴다(웹 글꼴은 600화 글 칸에서 한 글자에 30ms쯤 더 든다). TROUBLESHOOTING 20
+  const BIG_FLAT = 600, BIG_TEXT = 40000;
+  let drawTimer = 0, pendingDraw = null;
+  function flushDraw() { clearTimeout(drawTimer); const d = pendingDraw; pendingDraw = null; if (d) d(); }   // 미뤄 둔 그리기를 지금(그림을 누르기 전 등)
+  function syncFromText(fromCaret = true, typing = false) {
     const p = MM.parse(ta.value);
     state.flat = p.flat; state.lineToIndex = p.lineToIndex;
     state.deco = MM.decorate(state.flat, state.structure);
     state.keys = MM.foldKeys(state.flat);
-    render(); renderLedger(); updateStats(); save();
-    if (fromCaret && document.activeElement === ta) selectFromCaret();
+    ta.classList.toggle('big-text', ta.value.length > BIG_TEXT);
+    clearTimeout(drawTimer);
+    const draw = () => { render(); renderLedger(); if (fromCaret && document.activeElement === ta) selectFromCaret(); };
+    if (typing && state.flat.length > BIG_FLAT) { pendingDraw = draw; drawTimer = setTimeout(flushDraw, 200); }
+    else { pendingDraw = null; draw(); }
+    updateStats(); save(); scheduleCheck();
   }
   function syncCast() {
     state.cast = MM.parseCast(castTa.value);
-    renderCast(); updateStats(); save();
+    renderCast(); updateStats(); save(); scheduleCheck();
   }
 
   // ── 그림 조작 → 글 ──
@@ -1362,12 +1593,14 @@ const MM = (() => {
 
   // ── 그리기: 플롯 지도 ──
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const sizeSvg = (el, w, h) => { el.setAttribute('viewBox', `0 0 ${w} ${h}`); el.setAttribute('width', Math.round(w * zoom)); el.setAttribute('height', Math.round(h * zoom)); };
+  const sizeSvg = (el, w, h, z) => { el.setAttribute('viewBox', `0 0 ${w} ${h}`); el.setAttribute('width', Math.round(w * z)); el.setAttribute('height', Math.round(h * z)); };
+  const curZoom = () => state.mode === 'cast' ? castZoom : zoom;
+  const updateZoomLabel = () => { $('#zoomLabel').textContent = Math.round(curZoom() * 100) + '%'; };
   function render() {
     pieceCache = state.flat.map((_, i) => pieces(i));
     const root = MM.buildTree(state.flat, state.site || '작품 제목', state.folded);
     L = MM.layout(root, (text, isRoot, idx) => isRoot ? mRoot(text) : pieceCache[idx].width);
-    sizeSvg(svg, L.width + PAD * 2, L.height + PAD * 2 + HEAD);
+    sizeSvg(svg, L.width + PAD * 2, L.height + PAD * 2 + HEAD, zoom);
     const ox = PAD, oy = PAD + HEAD;
     let out = '';
     L.colX.forEach((x, l) => { if (l > 0) out += `<text class="col-label" x="${ox + x}" y="${PAD + 12}">${esc(MM.levelName(state.structure, l - 1))}</text>`; });
@@ -1402,7 +1635,7 @@ const MM = (() => {
     state.visible = new Set(L.nodes.map(n => n.idx));
     markSelected();
     updateWelcome();
-    $('#zoomLabel').textContent = Math.round(zoom * 100) + '%';
+    updateZoomLabel();
   }
   function markSelected() {
     svg.querySelectorAll('.node.sel, .node.sel-in').forEach(g => g.classList.remove('sel', 'sel-in'));
@@ -1440,16 +1673,18 @@ const MM = (() => {
   const castColor = k => k === 0 ? 'c0' : CAST_COLORS[1 + (k - 1) % 7];
   function renderCast() {
     // 시점 밖 관계 숨기기(기본): 그 회차에 살아 있는 관계만으로 선을 배치한다. 흐리게 보기면 전부 배치
-    const view = MM.castAt(state.cast, state.hideOff ? state.at : null);
+    // 숨길 때는 그 시점에 관계가 없는 인물도 뺀다
+    const view = MM.castAt(state.cast, state.hideOff ? state.at : null, { hideChars: true });
     CL = MM.castLayout(view, (t, kind) => kind === 'name' ? mName15(t) : kind === 'desc' ? mDesc(t) : mSmall(t) + 2);
-    CL.edges.forEach(e => { e.ri = view.keep[e.ri]; });          // 원래 관계 번호로(선택 · 강조가 이 번호를 쓴다)
+    CL.nodes.forEach(v => { v.k = view.ck[v.k]; });                // 원래 인물 · 관계 번호로(색 · 선택 · 강조가 이 번호를 쓴다)
+    CL.edges.forEach(e => { e.ri = view.keep[e.ri]; e.from = view.ck[e.from]; e.to = view.ck[e.to]; });
     if (!state.cast.chars.length) {
-      sizeSvg(castSvg, 520, 80);
+      sizeSvg(castSvg, 520, 80, castZoom);
       castSvg.innerHTML = '';
       updateWelcome();
       return;
     }
-    sizeSvg(castSvg, CL.width + PAD * 2, CL.height + PAD * 2);
+    sizeSvg(castSvg, CL.width + PAD * 2, CL.height + PAD * 2, castZoom);
     const o = PAD;
     const marker = (id, cls) => `<marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="${cls}" d="M1 1L9 5L1 9z" stroke-linejoin="round"/></marker>`;
     let out = '<defs>' + CAST_COLORS.map(c => marker('arr-' + c, 'arrow ' + c)).join('') + marker('arrHi', 'arrow-hi') + '</defs>';
@@ -1473,7 +1708,7 @@ const MM = (() => {
     castSvg.innerHTML = out;
     markCast();
     updateWelcome();
-    $('#zoomLabel').textContent = Math.round(zoom * 100) + '%';
+    updateZoomLabel();
   }
   // 글에서 고른 줄(또는 지도에서 누른 것)을 지도에 표시: 관계 줄이면 그 선과 두 사람, 인물 줄이면 그 사람과 닿은 선
   function markCast() {
@@ -1505,17 +1740,20 @@ const MM = (() => {
   function renderLedger() {
     const lg = MM.ledger(state.flat, state.structure);
     const badge = $('#openCount'); badge.textContent = lg.open; badge.hidden = !lg.open;
+    // 장부가 안 보이면 숫자만 고치고 그리지 않는다(탭을 열 때 그린다). 보이지 않는 흐름의 폭을 재느라
+    // 글자 하나 칠 때마다 화면 전체를 다시 배치해 600화에서 0.15초씩 걸렸다(TROUBLESHOOTING 20)
+    if (state.mode !== 'ledger') return;
     if (!lg.items.length) {
       ledgerPane.innerHTML = `<div class="ledger-empty">${ICON.mochi}<div><p><b>아직 떡밥이 없어요</b></p><p>플롯 줄 끝에 <code>[떡밥 낡은 반지]</code>처럼 붙이면 심은 곳으로, <code>[회수 낡은 반지]</code>를 붙이면 거둔 곳으로 여기에 모여요.</p></div></div>`;
       return;
     }
-    const go = (o, more = 0) => o ? `<button class="go" data-i="${o.i}">${esc(placeName(o.i))}</button>${more ? ` <span class="muted">외 ${more}곳</span>` : ''}` : '<span class="muted">—</span>';
+    const go = (o, others = []) => o ? `<button class="go" data-i="${o.i}">${esc(placeName(o.i))}</button>${others.length ? ` <span class="muted" title="${esc(others.map(p => placeName(p.i)).join('\n'))}">외 ${others.length}곳</span>` : ''}` : '<span class="muted">—</span>';
     const STATE = { open: ['open', '아직'], closed: ['closed', '거둠'], orphan: ['warn', '확인'], early: ['warn', '확인'] };
-    const memo = x => x.status === 'open' ? (x.age == null ? '' : x.age === 0 ? '마지막 화에서 심음' : `심은 뒤 ${x.age}화 지남`)
+    const memo = x => x.status === 'open' ? (x.age == null ? '' : (x.age === 0 ? '마지막 화에서 심음' : `심은 뒤 ${x.age}화 지남`) + (x.quiet != null && x.quiet !== x.age ? ` · 마지막으로 꺼낸 뒤 ${x.quiet}화` : ''))
       : x.status === 'closed' ? (x.span == null ? '' : x.span === 0 ? '같은 화에서 거둠' : `${x.span}화 만에 거둠`)
       : x.status === 'orphan' ? '심은 곳이 없음 — 이름이 같은지 확인' : '심기보다 먼저 거둠';
     const rows = lg.items.map(x => `<tr><td><span class="state ${STATE[x.status][0]}">${STATE[x.status][1]}</span></td>` +
-      `<td class="name">${esc(x.name)}</td><td>${go(x.plant, Math.max(0, x.plants.length - 1))}</td><td>${go(x.payoff, Math.max(0, x.payoffs.length - 1))}</td><td class="muted">${memo(x)}</td></tr>`).join('');
+      `<td class="name">${esc(x.name)}</td><td>${go(x.plant, x.plants.slice(1))}</td><td>${go(x.payoff, x.payoffs.filter(o => o !== x.payoff))}</td><td class="muted">${memo(x)}</td></tr>`).join('');
     // 요약 카드
     const closed = lg.items.filter(x => x.status === 'closed').length;
     const oldest = lg.items.find(x => x.status === 'open' && x.age != null);
@@ -1523,18 +1761,20 @@ const MM = (() => {
     const cards = card('open', '아직 안 거둔 떡밥', `${ICON.mochi}${lg.open}<small>개</small>`) +
       card('closed', '거둔 떡밥', `${ICON.fish}${closed}<small>개</small>`) +
       (lg.warn ? card('warn', '확인할 것', `${ICON.q}${lg.warn}<small>개</small>`, '이름이 같은지 · 순서가 맞는지') : '') +
-      card('oldest', '가장 오래 묵은 떡밥', oldest ? esc(oldest.name) : '—', oldest ? (oldest.age ? `심은 뒤 ${oldest.age}화 지남` : '마지막 화에서 심음') : '아직 안 거둔 떡밥이 없습니다');
+      card('oldest', '가장 오래 묵은 떡밥', oldest ? esc(oldest.name) : '—', oldest ? (oldest.age ? `심은 뒤 ${oldest.age}화 지남` : '마지막 화에서 심음') + (oldest.quiet != null && oldest.quiet !== oldest.age ? ` · 마지막으로 꺼낸 뒤 ${oldest.quiet}화` : '') : '아직 안 거둔 떡밥이 없습니다');
     // 떡밥 흐름: 화 순서를 따라 심은 곳 → 거둔 곳
     const tl = MM.ledgerTimeline(lg), pos = ep => ((ep - 0.5) / tl.last * 100).toFixed(3) + '%';
     const DOT_ICON = { plant: ICON.mochi, payoff: ICON.fish, warn: ICON.q };
     const dot = (cls, i, ep) => i == null || ep == null ? '' : `<button class="go tl-dot ${cls}" data-i="${i}" style="left:${pos(ep)}" title="${esc(placeName(i))}" aria-label="${esc(placeName(i))}">${DOT_ICON[cls]}</button>`;
+    // 다시 꺼낸 곳: 막대 위 작은 점(큰 그림 아래에 깔리게 먼저 그린다)
+    const again = r => r.again.map(a => `<button class="go tl-again ${a.kind}" data-i="${a.i}" style="left:${pos(a.ep)}" title="${esc('다시 꺼낸 곳: ' + placeName(a.i))}" aria-label="${esc('다시 꺼낸 곳: ' + placeName(a.i))}"></button>`).join('');
     const tlRow = r => {
-      let body = '';
-      if (r.status === 'closed' && r.from != null && r.to != null) body = `<span class="tl-bar closed" style="left:${pos(r.from)};width:calc(${pos(r.to)} - ${pos(r.from)})"></span>` + dot('plant', r.plantI, r.from) + dot('payoff', r.payoffI, r.to);
-      else if (r.status === 'open' && r.from != null) body = `<span class="tl-bar open" style="left:${pos(r.from)};width:calc(100% - ${pos(r.from)})"></span>` + dot('plant', r.plantI, r.from);
-      else if (r.status === 'early' && r.from != null && r.to != null) body = `<span class="tl-bar warn" style="left:${pos(r.to)};width:calc(${pos(r.from)} - ${pos(r.to)})"></span>` + dot('warn', r.payoffI, r.to) + dot('plant', r.plantI, r.from);
-      else if (r.status === 'orphan' && r.to != null) body = dot('warn', r.payoffI, r.to) + `<span class="tl-note" style="left:calc(${pos(r.to)} + 12px)">심은 곳 없음</span>`;
-      else body = `<span class="tl-note" style="left:0">회차를 알 수 없음 (화보다 위 단계에 붙음)</span>`;
+      let body = again(r);
+      if (r.status === 'closed' && r.from != null && r.to != null) body = body + `<span class="tl-bar closed" style="left:${pos(r.from)};width:calc(${pos(r.to)} - ${pos(r.from)})"></span>` + dot('plant', r.plantI, r.from) + dot('payoff', r.payoffI, r.to);
+      else if (r.status === 'open' && r.from != null) body = body + `<span class="tl-bar open" style="left:${pos(r.from)};width:calc(100% - ${pos(r.from)})"></span>` + dot('plant', r.plantI, r.from);
+      else if (r.status === 'early' && r.from != null && r.to != null) body = body + `<span class="tl-bar warn" style="left:${pos(r.to)};width:calc(${pos(r.from)} - ${pos(r.to)})"></span>` + dot('warn', r.payoffI, r.to) + dot('plant', r.plantI, r.from);
+      else if (r.status === 'orphan' && r.to != null) body = body + dot('warn', r.payoffI, r.to) + `<span class="tl-note" style="left:calc(${pos(r.to)} + 12px)">심은 곳 없음</span>`;
+      else body += `<span class="tl-note" style="left:0">회차를 알 수 없음 (화보다 위 단계에 붙음)</span>`;
       const span = r.from != null && r.to != null ? Math.abs(r.to - r.from) : null;   // 두 그림 사이 거리(화) — 좁으면 작은 점으로
       return `<div class="tl-row"${span != null && r.status !== 'open' ? ` data-span="${span}"` : ''}><span class="tl-name" title="${esc(r.name)}">${esc(r.name)}</span><div class="tl-track">${body}</div></div>`;
     };
@@ -1546,7 +1786,7 @@ const MM = (() => {
     const timeline = tl.last ? `<section class="box"><h2>떡밥 흐름 <span class="h2-right"><span>1화 ~ ${tl.last}화 · 그림을 누르면 플롯의 그 줄로</span>${toggle}</span></h2><div class="tl" data-last="${tl.last}">` +
       `<div class="tl-row tl-axis"><span></span><div class="tl-track">${tl.ticks.map(t => `<span class="tl-tick" style="left:${pos(t)}">${t}화</span>`).join('')}</div></div>` +
       (rowsShown.length ? rowsShown.map(tlRow).join('') : '<div class="tl-empty">아직 안 거둔 떡밥이 없어요 — 다 거뒀어요!</div>') + `</div><div class="tl-legend"><span>${ICON.mochi}떡밥 심은 곳</span><span>${ICON.fish}거둔 곳</span>` +
-      `${lg.warn ? `<span>${ICON.q}확인할 것</span>` : ''}<span>점선 = 아직 안 거둠</span></div></section>` : '';
+      `${lg.warn ? `<span>${ICON.q}확인할 것</span>` : ''}<span>점선 = 아직 안 거둠</span>${rowsShown.some(r => r.again.length) ? '<span><i class="tl-again-key"></i>작은 점 = 다시 꺼낸 곳</span>' : ''}</div></section>` : '';
     ledgerPane.innerHTML = `<div class="ledger-wrap"><div class="cards">${cards}</div>${timeline}` +
       `<section class="box list"><h2>전체 목록 <span>떡밥 ${lg.items.length}개${lg.lastEp ? ` · 지금 계획은 ${lg.lastEp}화까지` : ''}</span></h2>` +
       `<table class="ledger"><thead><tr><th>상태</th><th>떡밥</th><th>심은 곳</th><th>거둔 곳</th><th>메모</th></tr></thead><tbody>${rows}</tbody></table></section></div>`;
@@ -1569,6 +1809,117 @@ const MM = (() => {
     ta.focus(); selectLine(ta, state.flat[i].line); select(i, { toText: false, reveal: false });
   });
 
+  // ── 그리기: 점검(인물 등장 · 비슷한 이름 · 같은 회차 제목) ──
+  // 글자를 칠 때마다 다시 세면 느리니 멈추고 0.25초 뒤에 센다. 탭 숫자 = '확인' 개수('참고'는 빼고)
+  const checkPane = $('#checkPane');
+  let checkTimer = 0, checkData = null;
+  function computeCheck() {
+    const ap = MM.appearances(state.flat, state.structure, state.cast);
+    const sim = MM.similarNames(state.cast.chars.map(c => c.name));
+    const dup = MM.sameTitles(state.flat, state.structure);
+    const issues = ap.filter(a => a.late).length + sim.filter(p => p.level === 'check').length + dup.length;
+    return { ap, sim, dup, issues };
+  }
+  function scheduleCheck() { clearTimeout(checkTimer); checkTimer = setTimeout(updateCheck, 250); }
+  function updateCheck() {
+    clearTimeout(checkTimer);
+    checkData = computeCheck();
+    const b = $('#checkCount'); b.textContent = checkData.issues; b.hidden = !checkData.issues;
+    if (state.mode === 'check') renderCheck();
+  }
+  function renderCheck() {
+    const { ap, sim, dup, issues } = checkData || computeCheck();
+    if (!state.cast.chars.length && !state.flat.length) {
+      checkPane.innerHTML = `<div class="ledger-empty">${ICON.mochi}<div><p><b>점검할 것이 아직 없어요</b></p><p>왼쪽 플롯을 쓰고 <b>인물 지도</b> 탭에 인물을 적으면, 인물마다 플롯에 처음 · 마지막으로 나온 화와 비슷한 이름 · 같은 회차 제목이 여기 모여요.</p></div></div>`;
+      return;
+    }
+    const go = p => { if (!p) return '<span class="muted">—</span>'; const full = placeName(p.i); return `<button class="go" data-i="${p.i}" title="${esc(full)}">${esc(MM.shortDesc(full, 30))}</button>`; };
+    const badge = lv => lv ? `<span class="state ${lv === 'check' ? 'warn' : 'note'}">${lv === 'check' ? '확인' : '참고'}</span>` : '';
+    const seen = ap.filter(a => a.count);
+    const quiet = seen.filter(a => a.quiet > 0).sort((a, b) => b.quiet - a.quiet)[0];
+    const card = (cls, k, v, sub = '') => `<div class="card ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
+    const cards = card('closed', '플롯에 나온 인물', `${seen.length}<small>/ ${ap.length}명</small>`) +
+      card(issues ? 'warn' : 'open', '확인할 것', `${issues ? ICON.q : ''}${issues}<small>개</small>`, '관계보다 늦은 등장 · 헷갈리는 이름 · 같은 제목') +
+      card('oldest', '가장 오래 안 나온 인물', quiet ? esc(quiet.name) : '—', quiet ? `마지막 등장 뒤 ${quiet.quiet}화` : '모두 마지막 화까지 나와요');
+    const apRows = ap.map(a => {
+      const also = [...a.words.slice(1), ...(a.given ? [a.given] : [])];
+      const lv = a.late ? 'check' : !a.count ? 'note' : null;
+      const memo = !a.count ? '플롯에 안 나와요 — 부르는 이름이 다르면 인물 줄에 <code>이름(부르는 이름)</code>으로 적어 주세요'
+        : a.late ? `관계는 ${a.relStart}화부터인데 플롯에는 ${a.first.ep}화에 처음 나와요`
+        : a.quiet > 0 ? `마지막 등장 뒤 ${a.quiet}화째 안 나와요` : a.quiet === 0 ? '마지막 화까지 나와요' : '';
+      return `<tr><td>${badge(lv)}</td><td class="name">${esc(a.name)}${also.length ? `<span class="also" title="이 이름으로 나온 곳도 셉니다">+ ${esc(also.join(' · '))}</span>` : ''}</td><td>${go(a.first)}</td><td>${go(a.count > 1 ? a.last : null)}</td><td>${a.count ? a.eps + '화' : '—'}</td><td class="muted">${memo}</td></tr>`;
+    }).join('');
+    const simRows = sim.map(p => `<tr><td>${badge(p.level)}</td><td class="name">${esc(p.a)} · ${esc(p.b)}</td><td class="muted">${esc(p.why)}</td></tr>`).join('');
+    const dupRows = dup.map(d => `<tr><td>${badge('check')}</td><td class="name">${esc(d.title)}</td><td>${d.places.map(go).join(' · ')}</td></tr>`).join('');
+    checkPane.innerHTML = `<div class="ledger-wrap"><div class="cards">${cards}</div>` +
+      `<section class="box list"><h2>인물 등장 <span>플롯 줄에 이름이 나온 곳 · 장소를 누르면 그 줄로</span></h2>` +
+      (ap.length ? `<div class="tbl-scroll"><table class="ledger appear"><thead><tr><th></th><th>인물</th><th>처음</th><th>마지막</th><th>나온 화</th><th>메모</th></tr></thead><tbody>${apRows}</tbody></table></div>` : '<div class="empty-row">인물 지도 탭에 인물을 적으면 여기 나와요</div>') + '</section>' +
+      `<section class="box names"><h2>비슷한 이름 <span>인물 칸에 적은 이름끼리 비교</span></h2>` +
+      (simRows ? `<table class="ledger"><tbody>${simRows}</tbody></table>` : '<div class="empty-row">헷갈릴 만한 이름이 없어요</div>') +
+      '<p class="box-note">단역 이름도 비교하려면 인물 칸에 한 줄씩 적어 두세요. ‘참고’는 이름 첫 글자만 같은 것이라 가족이면 그대로 둬도 돼요.</p><div style="height:12px"></div></section>' +
+      `<section class="box titles"><h2>같은 회차 제목 <span>꼬리표를 뺀 화 제목이 같은 곳</span></h2>` +
+      (dupRows ? `<table class="ledger"><tbody>${dupRows}</tbody></table>` : '<div class="empty-row">같은 제목의 화가 없어요</div>') + '</section></div>';
+  }
+  checkPane.addEventListener('click', e => {
+    const b = e.target.closest('.go'); if (!b) return;
+    const i = +b.dataset.i; if (!state.flat[i]) return;
+    unfoldTo(i);
+    ta.focus(); selectLine(ta, state.flat[i].line); select(i, { toText: false, reveal: false });
+  });
+
+  // ── 찾아 바꾸기: 플롯 · 인물 · 메모에서 글자 그대로 한꺼번에(인물 이름 바꾸기용). 되돌리기 한 번으로 돌아간다 ──
+  const findBox = $('#findBox'), findFrom = $('#findFrom'), findTo = $('#findTo');
+  const AREAS = { plot: ['플롯', () => ta], cast: ['인물', () => castTa], memo: ['메모', () => memoTa] };
+  const findScopes = () => [...findBox.querySelectorAll('.find-scope input:checked')].map(c => c.value);
+  $('#findLead').textContent += ` 바꾼 뒤 ${KEYS.undo} 한 번이면 돌아가요.`;
+  function openFind() {
+    const area = state.mode === 'cast' ? castTa : ta;
+    const sel = area.value.slice(area.selectionStart, area.selectionEnd).trim();
+    if (sel && !sel.includes('\n') && [...sel].length <= 40) { findFrom.value = sel; findTo.value = ''; }
+    findBox.hidden = false; findFrom.focus(); findFrom.select(); updateFind();
+  }
+  function closeFind() { findBox.hidden = true; }
+  function updateFind() {
+    const q = findFrom.value, info = $('#findInfo');
+    if (!q) { info.innerHTML = '<span class="muted">찾을 말을 적으면 몇 곳인지 먼저 보여 드려요.</span>'; $('#findGo').disabled = true; return; }
+    let total = 0; const parts = [], samples = [];
+    findScopes().forEach(k => {
+      const [label, el] = AREAS[k], ls = MM.findLines(el().value, q), n = ls.reduce((m, l) => m + l.count, 0);
+      total += n; parts.push(`${label} ${n}곳`);
+      ls.slice(0, 3).forEach(l => samples.push({ label, text: l.text.trim() }));
+    });
+    const mark = t => esc(t).split(esc(q)).join(`<mark>${esc(q)}</mark>`);
+    const inside = state.cast.chars.map(c => c.name).filter(n => n !== q && n.includes(q));   // '만석'을 바꾸면 '진만석'도 바뀐다
+    info.innerHTML = `<b>${parts.length ? parts.join(' · ') : '바꿀 곳(플롯 · 인물 · 메모)을 골라 주세요'}</b>` +
+      (inside.length ? `<p class="find-warn">인물 ‘${esc(inside.join('’ · ‘'))}’ 이름 안에도 이 글자가 들어 있어 함께 바뀌어요</p>` : '') +
+      (samples.length ? `<ul>${samples.slice(0, 6).map(x => `<li><span class="muted">${x.label}</span> ${mark(x.text)}</li>`).join('')}</ul>` : '') +
+      (total && !findTo.value ? '<p class="muted" style="margin:6px 0 0">바꿀 말을 적으면 바꿀 수 있어요(지우기는 안 해요).</p>' : '');
+    $('#findGo').disabled = !total || !findTo.value || findTo.value === q;
+  }
+  function doFind() {
+    const q = findFrom.value, r = findTo.value;
+    if (!q || !r || q === r || $('#findGo').disabled) return;
+    const sc = findScopes().map(k => AREAS[k][1]()), res = sc.map(el => MM.replaceAll(el.value, q, r));
+    const total = res.reduce((m, x) => m + x.count, 0);
+    if (!total) return;
+    pushHistory();
+    sc.forEach((el, k) => { if (res[k].count) el.value = res[k].text; });
+    commit(); syncCast(); syncFromText(false); save();
+    closeFind();
+    toast(`‘${q}’ ${total}곳을 ‘${r}’(으)로 바꿨어요. 되돌리려면 ${KEYS.undo}`);
+  }
+  $('#findBtn').onclick = openFind;
+  $('#findClose').onclick = closeFind;
+  $('#findGo').onclick = doFind;
+  findFrom.addEventListener('input', updateFind); findTo.addEventListener('input', updateFind);
+  findBox.querySelectorAll('.find-scope input').forEach(c => c.addEventListener('change', updateFind));
+  findBox.addEventListener('keydown', e => {
+    if (e.isComposing || e.keyCode === 229) return;              // 한글 조합 중 Enter는 글자 확정
+    if (e.key === 'Escape') { e.preventDefault(); closeFind(); }
+    else if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') { e.preventDefault(); doFind(); }
+  });
+  findBox.addEventListener('pointerdown', e => { if (e.target === findBox) closeFind(); });
+
   // ── 아래 줄 숫자 ──
   function updateStats() {
     let s;
@@ -1578,7 +1929,11 @@ const MM = (() => {
     } else if (state.mode === 'cast') {
       const { chars, rels } = state.cast;
       s = chars.length ? `인물 ${chars.length}명 · 관계 ${rels.length}개` : '인물 없음';
-      if (state.at != null && rels.length) s += ` · ${state.at}화 시점 관계 ${rels.filter(r => MM.activeAt(r, state.at)).length}개`;
+      if (state.at != null && rels.length) {
+        s += ` · ${state.at}화 시점 관계 ${rels.filter(r => MM.activeAt(r, state.at)).length}개`;
+        const hid = state.hideOff ? chars.length - MM.castAt(state.cast, state.at, { hideChars: true }).chars.length : 0;
+        if (hid) s += ` · 그때 관계가 없는 인물 ${hid}명 숨김`;
+      }
     } else if (!state.flat.length) s = '아직 칸이 없습니다 — 왼쪽에 한 줄씩 적어 보세요';
     else {
       const counts = new Map();
@@ -1640,7 +1995,7 @@ const MM = (() => {
     const { i, original } = editing; editing = null; editor.hidden = true;
     const v = editor.value.replace(/\s+/g, ' ').trim();
     if (v && v !== original) {
-      if (i < 0) { pushHistory(); state.site = v; siteInput.value = v; commit(); render(); save(); select(-1); }
+      if (i < 0) { pushHistory(); state.site = v; siteInput.value = v; fitSite(); commit(); render(); save(); select(-1); }
       else applyOp(MM.rename(state.flat, i, v));
     }
     pane.focus({ preventScroll: true });
@@ -1673,6 +2028,7 @@ const MM = (() => {
   // ── 그림: 키보드 ──
   pane.addEventListener('keydown', e => {
     if (e.target === editor) return;
+    flushDraw();
     const mod = e.metaKey || e.ctrlKey, i = selected, f = state.flat;
     if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
     if (mod && e.key === 'y') { e.preventDefault(); redo(); return; }
@@ -1724,6 +2080,7 @@ const MM = (() => {
   }
   pane.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
+    flushDraw();
     const fold = state.mode === 'plot' && e.target.closest && e.target.closest('#map .fold');
     if (fold) { e.preventDefault(); toggleFold(+fold.dataset.i); return; }
     pane.focus({ preventScroll: true });
@@ -1759,15 +2116,18 @@ const MM = (() => {
   pane.addEventListener('dblclick', e => { if (state.mode !== 'plot') return; const i = nodeAt(e.clientX, e.clientY); if (i !== null) startEdit(i); });
 
   // ── 확대 · 축소 ──
-  function setZoom(z) { zoom = Math.min(2, Math.max(0.3, Math.round(z * 100) / 100)); render(); renderCast(); }
-  $('#zoomIn').onclick = () => setZoom(zoom * 1.2);
-  $('#zoomOut').onclick = () => setZoom(zoom / 1.2);
+  function setZoom(z) {
+    z = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(z * 100) / 100));
+    if (state.mode === 'cast') { castZoom = z; renderCast(); } else { zoom = z; render(); }
+  }
+  $('#zoomIn').onclick = () => setZoom(curZoom() * 1.2);
+  $('#zoomOut').onclick = () => setZoom(curZoom() / 1.2);
   $('#zoomLabel').onclick = () => setZoom(1);
   $('#zoomFit').onclick = () => {
     const W = state.mode === 'cast' ? CL.width + PAD * 2 : L.width + PAD * 2, H = state.mode === 'cast' ? CL.height + PAD * 2 : L.height + PAD * 2 + HEAD;
     setZoom(Math.min(1, (pane.clientWidth - 8) / W, (pane.clientHeight - 8) / H));
   };
-  pane.addEventListener('wheel', e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); } }, { passive: false });
+  pane.addEventListener('wheel', e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); setZoom(curZoom() * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); } }, { passive: false });
 
   // ── 글 칸: 플롯 ──
   ta.addEventListener('input', e => {
@@ -1777,7 +2137,7 @@ const MM = (() => {
       if (ws) ta.setRangeText(ws, pos, pos, 'end');
     }
     noteTyping();
-    syncFromText();
+    syncFromText(true, true);
   });
   function undoKeys(e) {
     const mod = e.metaKey || e.ctrlKey;
@@ -1848,7 +2208,7 @@ const MM = (() => {
   });
 
   // ── 작품 제목 · 설정 ──
-  siteInput.addEventListener('input', () => { state.site = siteInput.value.trim(); noteTyping(); render(); save(); });
+  siteInput.addEventListener('input', () => { state.site = siteInput.value.trim(); fitSite(); noteTyping(); render(); save(); });
   siteInput.addEventListener('keydown', e => {
     if (e.isComposing || e.keyCode === 229) return;
     if (e.key === 'Enter') { e.preventDefault(); setMode('plot'); pane.focus(); select(-1); }
@@ -1902,12 +2262,13 @@ const MM = (() => {
   }
   atInput.addEventListener('input', () => { const v = parseInt(atInput.value, 10); state.at = v > 0 ? v : null; syncOffBtn(); renderCast(); updateStats(); });
   $('#atAll').onclick = () => { atInput.value = ''; state.at = null; syncOffBtn(); renderCast(); updateStats(); };
-  offBtn.onclick = () => { state.hideOff = !state.hideOff; syncOffBtn(); renderCast(); };
+  offBtn.onclick = () => { state.hideOff = !state.hideOff; syncOffBtn(); renderCast(); updateStats(); };
 
   // ── 보기 바꾸기: 플롯 지도 · 인물 지도 · 떡밥 장부 ──
   const tabs = [...document.querySelectorAll('.tabs [data-mode]')];
   function setMode(m) {
     if (editing) commitEdit();
+    flushDraw();
     state.mode = m;
     tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === m)));
     const cast = m === 'cast';
@@ -1915,11 +2276,14 @@ const MM = (() => {
     $('#textTitle').innerHTML = TEXT_TITLE[cast ? 'cast' : 'plot'];
     $('#help').innerHTML = HELP[m];
     svg.toggleAttribute('hidden', m !== 'plot'); castSvg.toggleAttribute('hidden', !cast);   // SVG에는 .hidden 속성이 없다(TROUBLESHOOTING 6)
-    pane.hidden = m === 'ledger' || m === 'memo'; ledgerPane.hidden = m !== 'ledger'; $('#memoPane').hidden = m !== 'memo';
+    const board = m === 'ledger' || m === 'memo' || m === 'check';   // 그림 대신 종이 판을 보이는 탭
+    pane.hidden = board; ledgerPane.hidden = m !== 'ledger'; $('#memoPane').hidden = m !== 'memo'; checkPane.hidden = m !== 'check';
+    if (m === 'check') updateCheck();
     $('#mapWrap').classList.toggle('center', cast);
     updateWelcome();
-    if (m === 'ledger') tightenTimeline();
-    $('#plotBar').hidden = m !== 'plot'; $('#castBar').hidden = !cast; $('.view-bar').hidden = m === 'ledger' || m === 'memo';
+    if (m === 'ledger') renderLedger();
+    updateZoomLabel();
+    $('#plotBar').hidden = m !== 'plot'; $('#castBar').hidden = !cast; $('.view-bar').hidden = board;
     updateStats(); save();
   }
   tabs.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -2148,7 +2512,7 @@ const MM = (() => {
   // ── 시작 ──
   if (document.fonts) {
     let fontTimer = 0;
-    const redraw = () => { clearTimeout(fontTimer); fontTimer = setTimeout(() => { if (!editing) { render(); renderCast(); } }, 60); };
+    const redraw = () => { clearTimeout(fontTimer); fontTimer = setTimeout(() => { clearWidths(); fitSite(); if (!editing) { render(); renderCast(); } }, 60); };
     document.fonts.addEventListener('loadingdone', redraw);
     document.fonts.ready.then(redraw);
   }
@@ -2158,7 +2522,7 @@ const MM = (() => {
   if (saved && Array.isArray(saved.folds)) state.folded = new Set(saved.folds.filter(k => typeof k === 'string'));
   // 처음 온 사람은 빈 작품에서 시작한다(2026-11-25 사용자 "초기화된 상태에서 이용가능한 서비스로"). 예시는 위쪽 "예시" 단추로
   applyDoc({ site: '', text: '', cast: '', memo: '', structure: MM.DEFAULT_STRUCTURE, target: 5000, ...(saved || {}) });
-  setMode(saved && ['plot', 'cast', 'ledger', 'memo'].includes(saved.mode) ? saved.mode : 'plot');
+  setMode(saved && ['plot', 'cast', 'ledger', 'check', 'memo'].includes(saved.mode) ? saved.mode : 'plot');
   buildFoldBar();
   setWrap(!(saved && saved.wrap === false));
   if (saved && saved.leftW > 0) setLeftW(saved.leftW, false);
@@ -2183,7 +2547,7 @@ const MM = (() => {
   // 검사용 (qa에서 읽는다)
   window.__mm = {
     state, hist, select, undo, redo, setMode,
-    get selected() { return selected; }, get zoom() { return zoom; }, get L() { return L; }, get CL() { return CL; },
+    get selected() { return selected; }, get zoom() { return zoom; }, get castZoom() { return castZoom; }, get L() { return L; }, get CL() { return CL; },
   };
 })();
 </script>
