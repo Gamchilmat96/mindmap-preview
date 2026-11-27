@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><!-- 테스트용 공개 주소가 검색에 안 뜨게 -->
 <title>소설 기획 지도</title>
+<!-- 화면 모드: 단추로 고른 것이 있으면 그리기 전에 적용한다(없으면 컴퓨터 설정을 따른다) -->
+<script>try { const r = document.documentElement, t = localStorage.getItem('mindmap-novel-theme'); if (t === 'light' || t === 'dark') r.dataset.theme = t;
+  const x = JSON.parse(localStorage.getItem('mindmap-novel-text') || '{}') || {}; if (x.size === 'l' || x.size === 'xl') r.dataset.textSize = x.size; if (x.font === 'gothic') r.dataset.textFont = 'gothic';
+} catch (e) { /* 저장소를 못 쓰면 기본값 */ }</script>
 <!-- 글꼴만 Google Fonts에서 받는다(작품 내용은 보내지 않는다). 인터넷이 없으면 기본 글꼴로 보인다 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +18,10 @@
    참고: Gumroad · 파스텔 네오브루탈리즘(굵은 테두리 · 흐림 없는 그림자), Duolingo(둥근 모양 · 눌리는 단추).
    글꼴: 화면 틀과 그림은 Jua(둥근 글꼴), 글 칸은 Gowun Dodum. 인터넷이 없으면 기본 글꼴로 보인다. */
 :root {
-  --bg: #fff4e4; --panel: #fffdf8; --paper: #fffaf1; --ink: #3b2f2f; --muted: #8b7a6f;
+  --bg: #fff4e4; --panel: #fffdf8; --paper: #fffaf1; --ink: #3b2f2f; --muted: #6b5c55;                 /* 보조 글자: 모든 바탕에서 대비 4.5 이상(qa/contrast.mjs) */
   --line: #3b2f2f; --soft-line: #efdac4; --grid: #f6e6d2; --rule: #f3e0cc; --margin: #ffa9c4;
   --shade: #3b2f2f;                                   /* 그림자 색(흐림 없음) */
-  --sel: #ff4f93; --focus: #ff7aae;
+  --sel: #ff4f93; --focus: #ff7aae; --badge: #d6246b; --badge-ink: #fff;
   --pink: #ffd0e1; --pink-d: #f27aa6; --mint: #c4f1df; --mint-d: #3fb98c; --butter: #ffeaa6; --butter-d: #e9ad19;
   --lav: #e2d8ff; --lav-d: #8f78ec; --sky: #cfe8ff; --sky-d: #4fa3e3; --peach: #ffdcc4; --peach-d: #f5853d; --oat: #ece4d8; --oat-d: #9c8e80;
   /* 플롯 단계: 부 = 라벤더, 화 = 버터, 장면 = 민트, 세부 = 딸기 */
@@ -34,31 +38,36 @@
   --font-text: "Gowun Dodum", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   --font: var(--font-text);
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, "D2Coding", monospace;
+  /* 글 칸(플롯 · 인물 · 메모) 글자: '글자' 메뉴로 바꾼다. 줄 높이 = 공책 줄 간격 */
+  --ta-fs: 15.5px; --ta-lh: 30px; --ta-font: var(--font-text); --ta-ws: .2em;
   color-scheme: light;
 }
+:root[data-text-size="l"] { --ta-fs: 17.5px; --ta-lh: 34px; }
+:root[data-text-size="xl"] { --ta-fs: 20px; --ta-lh: 38px; }
+:root[data-text-font="gothic"] { --ta-font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; --ta-ws: normal; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #231d2c; --panel: #2c2537; --paper: #2a2334; --ink: #f6ead8; --muted: #b9a9a0;
+    --bg: #231d2c; --panel: #2c2537; --paper: #2a2334; --ink: #f6ead8; --muted: #c0b1a7;
     --line: #f6ead8; --soft-line: #463b52; --grid: #2f2839; --rule: #3a3146; --margin: #7a3d58;
-    --shade: #0e0b12; --sel: #ff6fa8; --focus: #ff8fbd;
-    --pink: #6a3a55; --pink-d: #ff9cc2; --mint: #2c5a4b; --mint-d: #6fe0b4; --butter: #5f4e22; --butter-d: #ffd35c;
-    --lav: #463b70; --lav-d: #b6a4ff; --sky: #2c4a6a; --sky-d: #7cc3ff; --peach: #6a4130; --peach-d: #ffab73; --oat: #4a4038; --oat-d: #cdbfb0;
+    --shade: #0e0b12; --sel: #ff6fa8; --focus: #ff8fbd; --badge: #ff8fbd; --badge-ink: #231d2c;
+    --pink: #583249; --pink-d: #ff9cc2; --mint: #284b42; --mint-d: #6fe0b4; --butter: #504122; --butter-d: #ffd35c;
+    --lav: #3c335e; --lav-d: #b6a4ff; --sky: #283e5a; --sky-d: #7cc3ff; --peach: #58372c; --peach-d: #ffab73; --oat: #3f3733; --oat-d: #cdbfb0;
     --d0: #f6ead8; --d0-ink: #231d2c; --edge: #6d5f66;
     --c0: #f6ead8; --c0-line: #f6ead8; --c0-ink: #231d2c; --c0-sub: #6d5f66;
-    --plant: #ff9a5c; --payoff: #5fe0ad; --warn: #ff7096; --warn-soft: #5a2635;
+    --plant: #ff9a5c; --payoff: #5fe0ad; --warn: #ff7096; --warn-soft: #4c2230;
     --mochi: #fff6ee; --cheek: #ff8fb5;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #231d2c; --panel: #2c2537; --paper: #2a2334; --ink: #f6ead8; --muted: #b9a9a0;
+  --bg: #231d2c; --panel: #2c2537; --paper: #2a2334; --ink: #f6ead8; --muted: #c0b1a7;
   --line: #f6ead8; --soft-line: #463b52; --grid: #2f2839; --rule: #3a3146; --margin: #7a3d58;
-  --shade: #0e0b12; --sel: #ff6fa8; --focus: #ff8fbd;
-  --pink: #6a3a55; --pink-d: #ff9cc2; --mint: #2c5a4b; --mint-d: #6fe0b4; --butter: #5f4e22; --butter-d: #ffd35c;
-  --lav: #463b70; --lav-d: #b6a4ff; --sky: #2c4a6a; --sky-d: #7cc3ff; --peach: #6a4130; --peach-d: #ffab73; --oat: #4a4038; --oat-d: #cdbfb0;
+  --shade: #0e0b12; --sel: #ff6fa8; --focus: #ff8fbd; --badge: #ff8fbd; --badge-ink: #231d2c;
+  --pink: #583249; --pink-d: #ff9cc2; --mint: #284b42; --mint-d: #6fe0b4; --butter: #504122; --butter-d: #ffd35c;
+  --lav: #3c335e; --lav-d: #b6a4ff; --sky: #283e5a; --sky-d: #7cc3ff; --peach: #58372c; --peach-d: #ffab73; --oat: #3f3733; --oat-d: #cdbfb0;
   --d0: #f6ead8; --d0-ink: #231d2c; --edge: #6d5f66;
   --c0: #f6ead8; --c0-line: #f6ead8; --c0-ink: #231d2c; --c0-sub: #6d5f66;
-  --plant: #ff9a5c; --payoff: #5fe0ad; --warn: #ff7096; --warn-soft: #5a2635;
+  --plant: #ff9a5c; --payoff: #5fe0ad; --warn: #ff7096; --warn-soft: #4c2230;
   --mochi: #fff6ee; --cheek: #ff8fb5;
   color-scheme: dark;
 }
@@ -95,7 +104,7 @@ header h1 { font: 19px var(--font-cute); margin: 0; white-space: nowrap; letter-
 #site { width: var(--site-w, 150px); max-width: 42vw; font: 16px var(--font-cute); color: var(--ink); background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 4px 10px; }
 #site:hover { border-color: var(--edge); }
 #site:focus { border: 2px solid var(--line); background: var(--panel); outline: none; }
-#site::placeholder { color: var(--muted); }
+input::placeholder { color: var(--muted); opacity: 1; }
 label { display: flex; align-items: center; gap: 6px; color: var(--muted); font: 13.5px var(--font-cute); white-space: nowrap; }
 #plotBar { flex-wrap: wrap; row-gap: 6px; }
 input, select { font: 14px var(--font-cute); color: var(--ink); background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 3px 8px; }
@@ -124,8 +133,15 @@ button.ghost { background: var(--paper); }
 .tabs button[data-mode="ledger"][aria-selected="true"] { background: var(--mint); }
 .badge {
   display: inline-block; min-width: 20px; margin-left: 6px; padding: 0 5px; border-radius: 10px; vertical-align: 1px;
-  background: var(--sel); color: #fff; border: 1.5px solid var(--line); font: 11.5px/17px var(--font-cute); text-align: center;
+  background: var(--badge); color: var(--badge-ink); border: 1.5px solid var(--line); font: 11.5px/17px var(--font-cute); text-align: center;
 }
+
+/* 화면 모드 단추: 밝을 때 달(누르면 어둡게), 어두울 때 해(누르면 밝게) */
+.theme-btn { display: inline-flex; align-items: center; padding: 4px 8px; }
+.theme-btn::before { content: '\200b'; }               /* 글자 단추와 같은 높이가 되게 */
+.theme-btn svg { display: block; width: 18px; height: 16px; }
+.theme-btn .th-sun, .theme-btn[aria-pressed="true"] .th-moon { display: none; }
+.theme-btn[aria-pressed="true"] .th-sun { display: block; }
 
 /* "저장 · 복사" 메뉴 */
 .menu { position: relative; }
@@ -161,17 +177,44 @@ body.resizing { cursor: col-resize; user-select: none; }
 #outline, #castText {
   flex: 1; width: 100%; min-height: 0; resize: none; border: 0; outline: none;
   padding: 12px 18px 20px 30px; color: var(--ink);
-  font: 15.5px/30px var(--font-text); word-spacing: .2em; tab-size: 4; white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto;
+  font: var(--ta-fs)/var(--ta-lh) var(--ta-font); word-spacing: var(--ta-ws); tab-size: 4; white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto;
   background-color: var(--panel);
   background-image: linear-gradient(90deg, transparent 17px, var(--margin) 17px, var(--margin) 20px, transparent 20px),
-    repeating-linear-gradient(to bottom, transparent 0 29px, var(--rule) 29px 30px);
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--ta-lh) - 1px), var(--rule) calc(var(--ta-lh) - 1px) var(--ta-lh));
   background-position: 0 0, 0 12px; background-attachment: local;
 }
 #outline::selection, #castText::selection { background: var(--pink); }
 #outline.big-text { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; word-spacing: normal; }
 .text-pane.nowrap #outline, .text-pane.nowrap #castText { white-space: pre; overflow-wrap: normal; }
-.pane-tools { display: flex; justify-content: flex-end; padding: 2px 14px 0; }
-button.mini { font-size: 12px; padding: 0 9px; border-width: 1.5px; box-shadow: 0 2px 0 var(--shade); background: var(--paper); color: var(--muted); }
+.pane-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; row-gap: 4px; padding: 2px 14px 0; }
+/* 글 칸 상자: 두 글 칸 + 줄 머리 점(글 칸 왼쪽 여백 위에 겹침) */
+.ta-box { flex: 1; min-height: 0; position: relative; display: flex; }
+/* 줄 머리 점: 줄이 새로 시작하는 곳(꺾여 이어진 줄에는 없음). 플롯은 지도 단계 색, 인물 칸은 인물 지도 색, 관계 줄은 짧은 막대 (TS-28) */
+.line-marks { position: absolute; left: 0; top: 0; bottom: 0; width: 17px; overflow: hidden; pointer-events: none; }
+.line-marks i { position: absolute; left: 4px; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--d1); }
+.line-marks .d2 { background: var(--d2); } .line-marks .d3 { background: var(--d3); } .line-marks .d4 { background: var(--d4); }
+.line-marks .c0 { background: var(--c0); } .line-marks .c1 { background: var(--c1); } .line-marks .c2 { background: var(--c2); } .line-marks .c3 { background: var(--c3); }
+.line-marks .c4 { background: var(--c4); } .line-marks .c5 { background: var(--c5); } .line-marks .c6 { background: var(--c6); } .line-marks .c7 { background: var(--c7); }
+.line-marks .rel { left: 4px; width: 9px; height: 3px; margin-top: -1.5px; border: 0; border-radius: 2px; background: var(--edge); }
+.line-marks .other { background: transparent; }
+/* 거울: 글 칸과 같은 폭 · 글꼴로 줄마다 칸 하나. 각 줄이 시작하는 높이를 잰다(화면에는 안 보임) */
+.ta-mirror { position: absolute; left: -99999px; top: 0; visibility: hidden; pointer-events: none; contain: layout style paint; padding: 0; border: 0; box-sizing: content-box; }
+.ta-mirror > div { display: block; }
+/* '글자' 메뉴(글 칸 위): 글자 크기 · 글꼴 · 줄 머리 점 */
+.text-menu > summary { font-size: 13px; padding: 0 9px; border-width: 1.5px; box-shadow: 0 2px 0 var(--shade); background: var(--paper); color: var(--muted); }
+.text-menu[open] > summary { color: var(--ink); background: var(--butter); }
+.text-menu > summary::after { font-size: 10px; margin-left: 4px; }
+.text-menu .menu-list { right: auto; left: 0; width: 290px; gap: 10px; padding: 12px 14px; }
+.text-list .opt { display: flex; flex-direction: column; gap: 5px; }
+.text-list .opt-k { font: 14px var(--font-cute); }
+.text-list .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.text-list .seg button { display: inline-block; font-size: 13.5px; padding: 2px 10px; border: 2px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: 0 2px 0 var(--shade); white-space: nowrap; }
+.text-list .seg button:hover { background: var(--paper); border-color: var(--line); box-shadow: 0 3px 0 var(--shade); transform: translateY(-1px); }
+.text-list .seg button[aria-pressed="true"] { background: var(--mint); }
+.text-list .seg .f-gothic { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+.text-list .seg .f-dodum { font-family: var(--font-text); }
+.text-list small { color: var(--muted); font: 12.5px/1.6 var(--font-text); }
+button.mini { font-size: 13px; padding: 0 9px; border-width: 1.5px; box-shadow: 0 2px 0 var(--shade); background: var(--paper); color: var(--muted); }
 button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 
 /* ── 오른쪽 그림: 모눈종이 ── */
@@ -270,18 +313,18 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 .memo-head span { font-size: 12.5px; color: var(--ink); opacity: .75; }
 #memoText {
   flex: 1; width: 100%; min-height: 0; resize: none; border: 0; outline: none; padding: 10px 20px 20px 34px; color: var(--ink);
-  font: 15.5px/30px var(--font-text); white-space: pre-wrap; overflow-wrap: anywhere; background-color: var(--panel);
+  font: var(--ta-fs)/var(--ta-lh) var(--ta-font); white-space: pre-wrap; overflow-wrap: anywhere; background-color: var(--panel);
   background-image: linear-gradient(90deg, transparent 21px, var(--margin) 21px, var(--margin) 24px, transparent 24px),
-    repeating-linear-gradient(to bottom, transparent 0 29px, var(--rule) 29px 30px);
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--ta-lh) - 1px), var(--rule) calc(var(--ta-lh) - 1px) var(--ta-lh));
   background-position: 0 0, 0 10px; background-attachment: local;
 }
-#memoText::placeholder { color: var(--muted); opacity: .55; }
+#memoText::placeholder { color: var(--muted); opacity: .9; }
 .tabs button[data-mode="memo"][aria-selected="true"] { background: var(--lav); }
 .tabs button[data-mode="check"][aria-selected="true"] { background: var(--sky); }
 /* 점검 탭 */
 .box.names > h2 { background: var(--pink); } .box.titles > h2 { background: var(--lav); }
 .box-note { margin: 0; padding: 8px 16px 0; font-size: 12.5px; color: var(--muted); }
-.ledger .also { display: block; font: 11.5px var(--font-text); color: var(--muted); }
+.ledger .also { display: block; font: 12.5px var(--font-text); color: var(--muted); }
 #checkPane .ledger td.name { min-width: 104px; }
 #checkPane .ledger td:last-child { min-width: 130px; }
 .tbl-scroll { overflow-x: auto; }
@@ -299,7 +342,7 @@ button.mini[aria-pressed="true"] { color: var(--ink); background: var(--mint); }
 .find-info { min-height: 44px; font-size: 13px; background: var(--paper); border: 2px dashed var(--soft-line); border-radius: 12px; padding: 8px 12px; margin-bottom: 14px; }
 .find-info b { font: 14.5px var(--font-cute); font-weight: 400; }
 .find-info ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.7; max-height: 150px; overflow: auto; }
-.find-info mark { background: var(--butter); border-radius: 3px; padding: 0 1px; }
+.find-info mark { background: var(--butter); color: var(--ink); border-radius: 3px; padding: 0 1px; }
 .find-warn { margin: 4px 0 0; color: var(--warn); }
 .find-btns { display: flex; gap: 8px; justify-content: flex-end; }
 .find-btns .primary { background: var(--pink); }
@@ -412,7 +455,7 @@ table.ledger { border-collapse: collapse; width: 100%; font-size: 13.5px; }
 .welcome-btns button { font-size: 14.5px; padding: 5px 13px; }
 .welcome-btns .primary { background: var(--pink); }
 .welcome-sub { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); }
-#outline::placeholder, #castText::placeholder { color: var(--muted); opacity: .55; }
+#outline::placeholder, #castText::placeholder { color: var(--muted); opacity: .9; }
 
 /* 따라 하기 */
 .tut {
@@ -456,16 +499,18 @@ footer {
   padding: 6px 16px; font-size: 12.5px; color: var(--muted); background: var(--panel); border-top: 2px solid var(--line);
 }
 #stats { font: 13.5px var(--font-cute); color: var(--ink); }
-kbd, footer code { font: 11.5px var(--font-text); border: 1.5px solid var(--line); border-radius: 6px; padding: 0 5px; background: var(--paper); color: var(--ink); }
+kbd, footer code { font: 12px var(--font-text); border: 1.5px solid var(--line); border-radius: 6px; padding: 0 5px; background: var(--paper); color: var(--ink); }
 kbd { border-bottom-width: 3px; }
-/* 노트북 너비: 위쪽 막대를 한 줄로 두려고 되돌리기 · 다시는 그림만, 탭은 조금 좁게(점검 탭 · 넓어진 제목 칸 몫) */
+/* 노트북 너비: 위쪽 막대를 한 줄로 두려고 되돌리기 · 다시 · 따라 하기는 그림만, 탭은 조금 좁게(점검 탭 · 넓어진 제목 칸 · 화면 모드 단추 몫) */
 @media (min-width: 761px) and (max-width: 1400px) {
-  #undoBtn .wd, #redoBtn .wd { display: none; }
+  #undoBtn .wd, #redoBtn .wd, #tutBtn .wd { display: none; }
+  .tut-ico { display: inline; font-size: 15px; line-height: 1; padding: 0 2px; }   /* 화면 모드 단추 몫 */
   .tabs button { padding: 5px 9px; }
 }
 @media (max-width: 760px) {
   header { padding: 8px 12px; gap: 8px; }
-  .brand { width: 100%; }
+  .brand { flex: 1 1 auto; order: -2; }
+  .theme-btn { order: -1; }                    /* 로고 줄 오른쪽 끝 */
   .title-field { flex: 1 1 100%; }
   #site { width: 100%; max-width: none; }
   .header-spacer { display: none; }
@@ -474,6 +519,7 @@ kbd { border-bottom-width: 3px; }
   .wd { display: none; }
   .tut-ico { display: inline; font-size: 15px; padding: 0 2px; }
   .menu-list { position: fixed; left: 12px; right: 12px; top: auto; width: auto; }
+  .text-menu .menu-list { left: 12px; right: 12px; width: auto; }   /* 넓은 화면용 left: 0을 되돌림 */
   .panes { grid-template-columns: 1fr; grid-template-rows: minmax(150px, 36%) 1fr; }
   .text-pane { border-bottom: 2px solid var(--line); }
   .splitter { display: none; }
@@ -533,14 +579,18 @@ kbd { border-bottom-width: 3px; }
       <button id="copyTextBtn"><span class="lbl">글 복사</span><small>지금 보는 글(플롯 · 인물 · 메모)</small></button>
     </div>
   </details>
+  <button id="themeBtn" class="ghost theme-btn" aria-label="어두운 화면" aria-pressed="false" title="어두운 화면으로 바꾸기"><svg class="th-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 12.6A7 7 0 0 1 7.4 3.8a7 7 0 1 0 8.8 8.8z" fill="currentColor"/></svg><svg class="th-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.7" fill="currentColor"/><path d="M10 1.9v2.3M10 15.8v2.3M1.9 10h2.3M15.8 10h2.3M4.3 4.3l1.6 1.6M14.1 14.1l1.6 1.6M4.3 15.7l1.6-1.6M14.1 5.9l1.6-1.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></button>
   <input id="fileInput" type="file" accept=".txt,.tsv,text/plain,text/tab-separated-values" hidden>
 </header>
 <main class="panes">
   <section class="text-pane">
     <div class="pane-title" id="textTitle"></div>
-    <div class="pane-tools"><button id="findBtn" class="mini" title="플롯 · 인물 · 메모에서 같은 글자를 한꺼번에 바꾸기(인물 이름 바꿀 때)">찾아 바꾸기</button><button id="wrapBtn" class="mini" aria-pressed="true" title="긴 줄을 칸 폭에 맞춰 접어 보기 / 한 줄로 보기">긴 줄 줄바꿈: 켬</button></div>
+    <div class="pane-tools"><details class="menu text-menu" id="textMenu"><summary title="글 칸의 글자 크기 · 글꼴 · 줄 머리 점">글자</summary><div class="menu-list text-list"><div class="opt"><span class="opt-k">글자 크기</span><span class="seg" data-opt="size"><button data-v="m">보통</button><button data-v="l">크게</button><button data-v="xl">아주 크게</button></span></div><div class="opt"><span class="opt-k">글꼴</span><span class="seg" data-opt="font"><button data-v="dodum" class="f-dodum">고운돋움</button><button data-v="gothic" class="f-gothic">또렷한 고딕</button></span></div><div class="opt"><span class="opt-k">줄 머리 점</span><span class="seg" data-opt="marks"><button data-v="on">켬</button><button data-v="off">끔</button></span></div><small>플롯 · 인물 · 메모 글 칸에 쓰여요. 이 브라우저에 기억해요.<br>줄 머리 점: 줄이 새로 시작하는 곳에 단계 색 점이 찍혀요. 길어서 꺾여 이어진 부분에는 점이 없어요.</small></div></details><button id="findBtn" class="mini" title="플롯 · 인물 · 메모에서 같은 글자를 한꺼번에 바꾸기(인물 이름 바꿀 때)">찾아 바꾸기</button><button id="wrapBtn" class="mini" aria-pressed="true" title="긴 줄을 칸 폭에 맞춰 접어 보기 / 한 줄로 보기">긴 줄 줄바꿈: 켬</button></div>
+    <div class="ta-box">
     <textarea id="outline" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="플롯 글" placeholder="1부 첫 번째 이야기&#10;  첫 만남&#10;    비 오는 골목에서 마주치다 [떡밥 반지]&#10;&#10;  두 번째 만남&#10;    반지가 빛나다 [회수 반지]"></textarea>
     <textarea id="castText" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="인물 글" placeholder="민준 : 주인공&#10;서아 : 조력자&#10;&#10;민준 -> 서아 : 신뢰 (5화~)" hidden></textarea>
+    <div id="lineMarks" class="line-marks" aria-hidden="true"></div>
+    </div>
   </section>
   <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" aria-label="글 칸 폭 (끌거나 ← → 키, 두 번 누르면 처음 폭)" tabindex="0" title="끌어서 글 칸 폭 바꾸기 · 두 번 누르면 처음 폭"></div>
   <section class="view">
@@ -1498,8 +1548,9 @@ const MM = (() => {
   function closeTyping() { clearTimeout(typingTimer); typing = false; }
   // 작품 제목 칸: 글자만큼 넓어진다(150~380px). 웹소설 제목은 17자 안팎이라 150px이면 앞 9자만 보였다(HANDOFF §3 A‴ 4)
   // 넓은 화면에서는 위쪽 막대가 두 줄로 넘어가지 않는 만큼만 넓힌다(1280px에서도 한 줄이던 막대를 지키려고)
-  const headerEl = document.querySelector('header'), brandEl = document.querySelector('.brand'), menuEl = document.querySelector('#moreMenu');
-  const headerWraps = () => menuEl.getBoundingClientRect().top - brandEl.getBoundingClientRect().top > 20;
+  const headerEl = document.querySelector('header'), brandEl = document.querySelector('.brand'), lastEl = document.querySelector('#themeBtn');
+  // 막대 맨 끝(화면 모드 단추)이 둘째 줄로 내려갔는지
+  const headerWraps = () => lastEl.getBoundingClientRect().top - brandEl.getBoundingClientRect().top > 20;
   function fitSite() {
     let w = Math.min(380, Math.max(150, Math.ceil(textW('16px', siteInput.value || siteInput.placeholder)) + 30));
     siteInput.title = siteInput.value;
@@ -1552,11 +1603,11 @@ const MM = (() => {
     const draw = () => { render(); renderLedger(); if (fromCaret && document.activeElement === ta) selectFromCaret(); };
     if (typing && state.flat.length > BIG_FLAT) { pendingDraw = draw; drawTimer = setTimeout(flushDraw, 200); }
     else { pendingDraw = null; draw(); }
-    updateStats(); save(); scheduleCheck();
+    updateStats(); save(); scheduleCheck(); scheduleMarks();
   }
   function syncCast() {
     state.cast = MM.parseCast(castTa.value);
-    renderCast(); updateStats(); save(); scheduleCheck();
+    renderCast(); updateStats(); save(); scheduleCheck(); scheduleMarks();
   }
 
   // ── 그림 조작 → 글 ──
@@ -1957,10 +2008,103 @@ const MM = (() => {
     const raw = lines[line] || '';
     const lead = raw.match(/^[ \t]*(?:[-*+•]\s+)?/)[0].length;
     area.setSelectionRange(start + lead, start + raw.replace(/\s+$/, '').length);
-    const top = line * LINE_H;
-    if (top < area.scrollTop || top > area.scrollTop + area.clientHeight - LINE_H * 2) area.scrollTop = Math.max(0, top - area.clientHeight / 3);
+    // 그 줄이 글 칸 안에서 시작하는 높이: 거울로 꺾인 줄까지 센다(TS-28). 못 재면 줄 번호 × 줄 높이
+    const g = measureLines(area), lh = g ? g.lh : parseFloat(getComputedStyle(area).lineHeight) || 30;
+    const top = g ? g.padT + (g.tops[line] || 0) : line * lh;
+    if (top < area.scrollTop || top > area.scrollTop + area.clientHeight - lh * 2) area.scrollTop = Math.max(0, top - area.clientHeight / 3);
   }
   const caretLine = area => area.value.slice(0, area.selectionStart).split('\n').length - 1;
+
+  // ── 줄 머리 점(TS-28) ──
+  // textarea 안의 글은 줄마다 꾸밀 수 없다. 그래서 글 칸과 같은 폭 · 글꼴의 보이지 않는 '거울'(줄마다 div 하나)로
+  // 각 줄이 시작하는 높이를 재고, 글 칸 왼쪽 여백(분홍 세로줄 왼쪽, 글자가 없는 곳) 위에 점을 찍는다.
+  // 고친 줄만 거울에서 바꾸고, 입력이 0.12초(큰 글은 0.4초) 멈춘 뒤에 잰다. 스크롤할 때는 재지 않고 점만 옮긴다.
+  const marksEl = $('#lineMarks'), mirrors = new Map(), geos = new Map();
+  let marksOn = true, marksTimer = 0;
+  const marksArea = () => (castTa.hidden ? ta : castTa);
+  function measureLines(area) {
+    if (area.hidden || !area.clientWidth) return null;
+    const cs = getComputedStyle(area), padL = parseFloat(cs.paddingLeft), padR = parseFloat(cs.paddingRight);
+    const w = area.clientWidth - padL - padR;
+    const key = [w, cs.fontFamily, cs.fontSize, cs.lineHeight, cs.wordSpacing, cs.letterSpacing, cs.whiteSpace, cs.overflowWrap, cs.tabSize].join('|');
+    let m = mirrors.get(area);
+    if (!m) { m = document.createElement('div'); m.className = 'ta-mirror'; m.setAttribute('aria-hidden', 'true'); document.body.appendChild(m); mirrors.set(area, m); }
+    let g = geos.get(area);
+    if (!g || g.key !== key) {
+      Object.assign(m.style, { width: w + 'px', fontFamily: cs.fontFamily, fontSize: cs.fontSize, fontWeight: cs.fontWeight, lineHeight: cs.lineHeight, wordSpacing: cs.wordSpacing,
+        letterSpacing: cs.letterSpacing, whiteSpace: cs.whiteSpace, overflowWrap: cs.overflowWrap, wordBreak: cs.wordBreak, tabSize: cs.tabSize });
+      m.textContent = '';
+      g = { key, lines: [], tops: [], lh: parseFloat(cs.lineHeight) || 30, padT: parseFloat(cs.paddingTop) };
+    }
+    const lines = area.value.split('\n'), old = g.lines, max = Math.min(old.length, lines.length);
+    let p = 0; while (p < max && old[p] === lines[p]) p++;
+    let q = 0; while (q < max - p && old[old.length - 1 - q] === lines[lines.length - 1 - q]) q++;
+    const kids = m.children;
+    for (let k = old.length - q - 1; k >= p; k--) kids[k].remove();
+    const frag = document.createDocumentFragment();
+    for (let k = p; k < lines.length - q; k++) { const d = document.createElement('div'); d.textContent = lines[k] || '\u200b'; frag.appendChild(d); }
+    m.insertBefore(frag, kids[p] || null);
+    g.lines = lines; g.tops = Array.from(kids, d => d.offsetTop);
+    geos.set(area, g);
+    return g;
+  }
+  // 줄마다 점 모양: 플롯은 지도 칸과 같은 단계 색(d1 = 맨 윗단계), 인물 칸은 인물 색 · 관계 막대 · 그 밖의 줄은 빈 점
+  let markCache = { flat: null, cast: null, plot: [], castCls: [] };
+  function markClasses(area) {
+    if (area === ta) {
+      if (markCache.flat !== state.flat) { const c = []; for (const n of state.flat) c[n.line] = 'd' + Math.min(n.depth + 1, 4); markCache.plot = c; markCache.flat = state.flat; }
+      return markCache.plot;
+    }
+    if (markCache.cast !== state.cast || markCache.castText !== castTa.value) {
+      const c = []; castTa.value.split('\n').forEach((l, k) => { if (l.trim()) c[k] = 'other'; });
+      state.cast.rels.forEach(r => { if (r.line != null) c[r.line] = 'rel'; });
+      state.cast.chars.forEach((ch, k) => { if (ch.line != null) c[ch.line] = castColor(k); });
+      markCache.castCls = c; markCache.cast = state.cast; markCache.castText = castTa.value;
+    }
+    return markCache.castCls;
+  }
+  function drawMarks() {
+    const area = marksArea(), g = geos.get(area);
+    if (!marksOn || !g || area.hidden) { marksEl.innerHTML = ''; return; }
+    const h = area.clientHeight, off = g.padT - area.scrollTop + g.lh / 2, tops = g.tops, cls = markClasses(area);
+    let lo = 0, hi = tops.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (tops[mid] + off < -g.lh) lo = mid + 1; else hi = mid; }
+    let out = '';
+    for (let k = lo; k < tops.length; k++) { const y = tops[k] + off; if (y > h + g.lh) break; if (cls[k]) out += `<i class="${cls[k]}" style="top:${Math.round(y)}px"></i>`; }
+    marksEl.innerHTML = out;
+  }
+  function scheduleMarks(delay) {
+    clearTimeout(marksTimer);
+    const area = marksArea();
+    if (!marksOn) { marksEl.innerHTML = ''; return; }
+    marksTimer = setTimeout(() => { measureLines(marksArea()); drawMarks(); }, delay ?? (area.value.length > BIG_TEXT ? 400 : 120));
+  }
+  [ta, castTa].forEach(a => a.addEventListener('scroll', drawMarks, { passive: true }));
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => scheduleMarks(60)); ro.observe(ta); ro.observe(castTa); }
+  else addEventListener('resize', () => scheduleMarks(60));
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { geos.clear(); scheduleMarks(30); });   // 글꼴이 늦게 오면 폭이 바뀐다
+
+  // ── '글자' 메뉴: 글 칸 글자 크기 · 글꼴 · 줄 머리 점. 이 브라우저에 기억(mindmap-novel-text). 크기 · 글꼴은 머리의 짧은 스크립트가 그리기 전에 넣는다 ──
+  const TEXT_KEY = 'mindmap-novel-text', textMenu = $('#textMenu');
+  const TEXT_OK = { size: ['m', 'l', 'xl'], font: ['dodum', 'gothic'], marks: ['on', 'off'] }, TEXT_DEFAULT = { size: 'm', font: 'dodum', marks: 'on' };
+  const textPref = (() => { try { return JSON.parse(localStorage.getItem(TEXT_KEY) || '{}') || {}; } catch (e) { return {}; } })();
+  function applyTextPref() {
+    const p = {}; for (const k in TEXT_DEFAULT) p[k] = TEXT_OK[k].includes(textPref[k]) ? textPref[k] : TEXT_DEFAULT[k];
+    const root = document.documentElement;
+    if (p.size === 'm') delete root.dataset.textSize; else root.dataset.textSize = p.size;
+    if (p.font === 'dodum') delete root.dataset.textFont; else root.dataset.textFont = p.font;
+    textMenu.querySelectorAll('.seg').forEach(sg => sg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === p[sg.dataset.opt]))));
+    marksOn = p.marks === 'on';
+    scheduleMarks(0);
+  }
+  textMenu.addEventListener('click', e => {
+    const b = e.target.closest('.seg button'); if (!b) return;
+    textPref[b.closest('.seg').dataset.opt] = b.dataset.v;
+    try { localStorage.setItem(TEXT_KEY, JSON.stringify(textPref)); } catch (err) { /* 저장 못 하면 이번 창에서만 */ }
+    applyTextPref();
+  });
+  document.addEventListener('pointerdown', e => { if (textMenu.open && !textMenu.contains(e.target)) textMenu.open = false; });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && textMenu.open) { textMenu.open = false; textMenu.querySelector('summary').focus(); } });
+  applyTextPref();
   function selectFromCaret() {
     const i = state.lineToIndex[caretLine(ta)] ?? -2;
     if (i !== selected) select(i, { toText: false });
@@ -2220,6 +2364,7 @@ const MM = (() => {
     state.wrap = on;
     $('.text-pane').classList.toggle('nowrap', !on);
     const b = $('#wrapBtn'); b.setAttribute('aria-pressed', String(on)); b.textContent = '긴 줄 줄바꿈: ' + (on ? '켬' : '끔');
+    scheduleMarks(0);
   }
   $('#wrapBtn').onclick = () => { setWrap(!state.wrap); save(); };
   // 글 칸 폭: 가운데 막대를 끌거나 ← → 키(20px씩). 두 번 누르면 처음(390px). 폭은 이 브라우저에 기억
@@ -2272,7 +2417,7 @@ const MM = (() => {
     state.mode = m;
     tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === m)));
     const cast = m === 'cast';
-    ta.hidden = cast; castTa.hidden = !cast;
+    ta.hidden = cast; castTa.hidden = !cast; scheduleMarks(0);
     $('#textTitle').innerHTML = TEXT_TITLE[cast ? 'cast' : 'plot'];
     $('#help').innerHTML = HELP[m];
     svg.toggleAttribute('hidden', m !== 'plot'); castSvg.toggleAttribute('hidden', !cast);   // SVG에는 .hidden 속성이 없다(TROUBLESHOOTING 6)
@@ -2502,6 +2647,19 @@ const MM = (() => {
     else endTutorial(a);
   });
   $('#tutBtn').onclick = () => { if (tut) return; startTutorial(); };
+  // 화면 모드: 처음엔 컴퓨터 설정(prefers-color-scheme)을 따르고, 단추를 누르면 그 선택을 이 브라우저에 기억한다.
+  // 색은 모두 CSS 변수라(:root[data-theme]) 지도를 다시 그리지 않아도 바로 바뀐다.
+  const THEME_KEY = 'mindmap-novel-theme', darkQuery = matchMedia('(prefers-color-scheme: dark)'), themeBtn = $('#themeBtn');
+  const isDark = () => (document.documentElement.dataset.theme || (darkQuery.matches ? 'dark' : 'light')) === 'dark';
+  const showTheme = () => { const d = isDark(); themeBtn.setAttribute('aria-pressed', String(d)); themeBtn.title = d ? '밝은 화면으로 바꾸기' : '어두운 화면으로 바꾸기'; };
+  themeBtn.onclick = () => {
+    const t = isDark() ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* 저장 못 하면 이번 창에서만 */ }
+    showTheme();
+  };
+  if (darkQuery.addEventListener) darkQuery.addEventListener('change', showTheme);
+  showTheme();
   $('#welcome').addEventListener('click', e => {
     const b = e.target.closest('[data-w]'); if (!b) return;
     if (b.dataset.w === 'tut') { if (!tut) startTutorial(); }
@@ -2546,7 +2704,7 @@ const MM = (() => {
 
   // 검사용 (qa에서 읽는다)
   window.__mm = {
-    state, hist, select, undo, redo, setMode,
+    state, hist, select, undo, redo, setMode, measureLines, drawMarks,
     get selected() { return selected; }, get zoom() { return zoom; }, get castZoom() { return castZoom; }, get L() { return L; }, get CL() { return CL; },
   };
 })();
